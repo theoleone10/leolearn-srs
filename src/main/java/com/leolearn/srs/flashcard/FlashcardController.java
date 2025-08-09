@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 
@@ -75,7 +74,7 @@ public class FlashcardController {
             .orElseThrow(FlashcardNotFoundException::new);
 
         float easeFactor = flashcard.easeFactor();
-        int repititions = flashcard.repititions();
+        int repititions = flashcard.repetitions();
         int rating = request.difficulty().getRating();
         float reviewIntervalDays = flashcard.reviewIntervalDays();
 
@@ -107,7 +106,9 @@ public class FlashcardController {
             reviewIntervalDays,
             easeFactor,
             repititions,
-            lastReviewed.plusDays((long) reviewIntervalDays)
+            lastReviewed.plusDays((long) reviewIntervalDays),
+            flashcard.deckId(),
+            flashcard.version() == null ? 1 : flashcard.version() + 1
         );
 
         flashcardRepository.save(updated);

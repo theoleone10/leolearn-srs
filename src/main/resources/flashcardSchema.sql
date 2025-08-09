@@ -1,12 +1,14 @@
 CREATE TABLE IF NOT EXISTS Flashcard (
     id INT NOT NULL,
-    frontText varchar(250) NOT NULL,
-    backText varchar(250) NOT NULL,
+    frontText TEXT,
+    backText TEXT,
     dateCreated timestamp NOT NULL,
     lastReviewed timestamp,        
     reviewIntervalDays FLOAT NOT NULL,
     easeFactor FLOAT NOT NULL,     
-    repetition INT NOT NULL,   
-    nextReviewDate timestamp NOT NULL
+    repetitions INT NOT NULL,   
+    nextReviewDate timestamp NOT NULL,
+    deckId INT, -- Added deckId to match Flashcard.java
+    version INT,
     PRIMARY KEY (id)
 );

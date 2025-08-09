@@ -19,8 +19,7 @@ import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 import com.leolearn.srs.flashcard.Flashcard;
-import com.leolearn.srs.flashcard.JdbcClientFlachcardRepository;
-import com.leolearn.srs.flashcard.Location;
+import com.leolearn.srs.flashcard.JdbcClientFlashcardRepository;
 import com.leolearn.srs.user.User;
 import com.leolearn.srs.user.UserHttpClient;
 import com.leolearn.srs.user.UserRestClient;

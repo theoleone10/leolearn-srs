@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Positive;
 
 public record Flashcard(
     @Id
@@ -17,14 +15,16 @@ public record Flashcard(
     LocalDateTime lastReviewed,        
     Float reviewIntervalDays, 
     Float easeFactor,
-    Integer repititions,       
-    LocalDateTime nextReviewDate
-
+    Integer repetitions,       
+    LocalDateTime nextReviewDate,
+    Integer deckId,
+    @Version
+    Integer version
 )
 {
     public Flashcard {
         if(!nextReviewDate.isAfter(lastReviewed)) {
-            throw new IllegalArgumentException("nex tReview Date must be after last Reviewed");
+            throw new IllegalArgumentException("next Review Date must be after last Reviewed");
         }
     }
 }
