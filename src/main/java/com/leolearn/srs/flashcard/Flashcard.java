@@ -15,14 +15,16 @@ public record Flashcard(
     String backText,
     LocalDateTime dateCreated,
     LocalDateTime lastReviewed,        
-    Integer reviewIntervalDays,        
+    Float reviewIntervalDays, 
+    Float easeFactor,
+    Integer repititions,       
     LocalDateTime nextReviewDate
 
 )
 {
-    // public Flashcard {
-    //     if(!completedOn.isAfter(startedOn)) {
-    //         throw new IllegalArgumentException("Completed On must be after Started On");
-    //     }
-    // }
+    public Flashcard {
+        if(!nextReviewDate.isAfter(lastReviewed)) {
+            throw new IllegalArgumentException("nex tReview Date must be after last Reviewed");
+        }
+    }
 }

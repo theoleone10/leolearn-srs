@@ -38,7 +38,7 @@ public class JdbcClientFlachcardRepository {
     }
 
     public void create(Flashcard flashcard) {
-        var updated = jdbcClient.sql("insert into flashcard (id,frontText, backText, dateCreated, lastReviewed, reviewIntervalDays, nextReviewDate) values (?, ?, ?, ?, ?, ?, ?)")
+        var updated = jdbcClient.sql("insert into flashcard (id,frontText, backText, dateCreated, lastReviewed, reviewIntervalDays, easefactor, nextReviewDate) values (?, ?, ?, ?, ?, ?, ?)")
             .params(List.of(flashcard.id(),flashcard.frontText(), flashcard.backText(), flashcard.dateCreated(), flashcard.lastReviewed(), flashcard.reviewIntervalDays(), flashcard.nextReviewDate()))
             .update();
         
@@ -46,7 +46,7 @@ public class JdbcClientFlachcardRepository {
     }
 
     public void update(Flashcard flashcard, Integer id) {
-        var updated = jdbcClient.sql("update flashcard set frontText = ?, backText = ?, dateCreated = ?, lastReviewed = ?, reviewIntervalDays = ?, nextReviewDate = ? where id = ?")
+        var updated = jdbcClient.sql("update flashcard set frontText = ?, backText = ?, dateCreated = ?, lastReviewed = ?, reviewIntervalDays = ?, easefactor = ?, nextReviewDate = ? where id = ?")
         .params(List.of(flashcard.id(),flashcard.frontText(), flashcard.backText(), flashcard.dateCreated(), flashcard.lastReviewed(), flashcard.reviewIntervalDays(), flashcard.nextReviewDate()))
             .update();
         
