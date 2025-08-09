@@ -48,6 +48,7 @@ public class FlashcardController {
     }
     
     @GetMapping("")
+    public
     List<Flashcard> findAll() {
         return flashcardRepository.findAll();
     }

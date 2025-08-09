@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS Flashcard (
     easeFactor FLOAT NOT NULL,     
     repetitions INT NOT NULL,   
     nextReviewDate timestamp NOT NULL,
-    deckId INT, -- Added deckId to match Flashcard.java
+    deckId INT, 
     version INT,
     PRIMARY KEY (id)
 );

@@ -55,6 +55,7 @@ public class DeckController {
     // delete
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
+    public
     void delete(@PathVariable Integer id) {
         deckRepository.delete(deckRepository.findById(id).get());
     }
