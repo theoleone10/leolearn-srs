@@ -63,7 +63,7 @@ function cardReducer(state, action) {
         })),
       }
 
-    case "ADD_DECK":
+      case "ADD_DECK": {
       const newDeck = {
         id: Date.now().toString(),
         name: action.payload.name,
@@ -73,15 +73,16 @@ function cardReducer(state, action) {
         ...state,
         decks: [...state.decks, newDeck],
       }
+    }
 
-    case "DELETE_DECK":
+    case "DELETE_DECK": {
       const remainingDecks = state.decks.filter((deck) => deck.id !== action.payload.id)
       return {
         ...state,
         decks: remainingDecks,
         currentDeck: remainingDecks.length > 0 ? remainingDecks[0].id : null,
       }
-
+    }
     case "SET_CURRENT_DECK":
       return {
         ...state,

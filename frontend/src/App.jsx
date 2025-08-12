@@ -1,9 +1,9 @@
 "use client"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.jsx"
-import { CardProvider } from "../context/CardContext.jsx"
-import { CardsPage } from "../pages/cards-page.jsx"
-import { StudyPage } from "../pages/study-page.jsx"
-import { ProgressPage } from "../pages/progress-page.jsx"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs.jsx"
+import { CardProvider } from "./context/CardContext.jsx"
+import { CardsPage } from "./pages/cards-page.jsx"
+import { StudyPage } from "./pages/study-page.jsx"
+import { ProgressPage } from "./pages/progress-page.jsx"
 import { BookOpen, Brain, BarChart3 } from "lucide-react"
 
 function AppContent() {
