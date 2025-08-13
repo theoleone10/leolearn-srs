@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useReducer } from "react"
+import { useNavigate } from "react-router-dom";
 
 const CardContext = createContext()
 
@@ -96,6 +97,7 @@ function cardReducer(state, action) {
 
 export function CardProvider({ children }) {
   const [state, dispatch] = useReducer(cardReducer, initialState)
+  const navigate = useNavigate(); // Define navigate here
 
   const addCard = (front, back) => {
     dispatch({ type: "ADD_CARD", payload: { front, back } })
@@ -143,6 +145,7 @@ export function CardProvider({ children }) {
     setCurrentDeck,
     getCurrentDeck,
     getCardsForReview,
+    navigate // Include navigate in the context value
   }
 
   return <CardContext.Provider value={value}>{children}</CardContext.Provider>

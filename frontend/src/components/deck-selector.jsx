@@ -6,11 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Badge } from "./ui/badge"
 import { Input } from "./ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
-import { Trash2, Plus, BookOpen } from "lucide-react"
+import { Trash2, Plus, BookOpen, Edit } from "lucide-react"
 import { useCards } from "../context/CardContext"
 
 export function DeckSelector() {
-  const { decks, currentDeck, addDeck, deleteDeck, setCurrentDeck } = useCards()
+  const { decks, currentDeck, addDeck, deleteDeck, setCurrentDeck, navigate } = useCards()
   const [newDeckName, setNewDeckName] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -50,7 +50,7 @@ export function DeckSelector() {
         <h2 className="text-xl font-semibold">Your Decks</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-blue-500 text-white shadow-[0_0_10px_bg-blue-600] hover:bg-blue-400 hover:text-white hover:shadow-[0_0_10px_bg-blue-600]">
               <Plus className="h-4 w-4 mr-2" />
               New Deck
             </Button>
@@ -77,7 +77,7 @@ export function DeckSelector() {
         </Dialog>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1" >
         {decks.map((deck) => {
           const cardCount = getCardCount(deck)
           const dueCount = getDueCount(deck)
@@ -99,6 +99,22 @@ export function DeckSelector() {
                       {deck.name}
                     </CardTitle>
                   </div>
+                  <Button 
+                    variant="edit"
+                    size="sm"
+                    onClick={() => navigate('/add-card')}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <Plus className="h-4 w-4"/>
+                  </Button>
+                  <Button
+                    variant="edit"
+                    size="sm"
+                    onClick={() => navigate('/edit-deck')}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
                   {decks.length > 1 && (
                     <Button
                       variant="ghost"
@@ -111,23 +127,25 @@ export function DeckSelector() {
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
+              
                   )}
+                  
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
+                <div className="grid grid-cols-3 gap-x-1 sm:gap-x-8">
+                  <div className="flex items-center justify-start text-sm">
                     <span className="text-muted-foreground">Total Cards:</span>
                     <Badge variant="secondary">{cardCount}</Badge>
                   </div>
                   {dueCount > 0 && (
-                    <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center justify-start text-sm">
                       <span className="text-muted-foreground">Due for Review:</span>
                       <Badge variant="destructive">{dueCount}</Badge>
                     </div>
                   )}
                   {isSelected && (
-                    <div className="mt-3 pt-2 border-t">
+                    <div className="">
                       <Badge variant="default" className="text-xs">
                         Currently Selected
                       </Badge>

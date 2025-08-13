@@ -4,10 +4,11 @@ import { useState } from "react"
 import { Button } from "./ui/button"
 import { Textarea } from "./ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
+import { toast } from "react-toastify";
 import { useCards } from "../context/CardContext"
 
 export function CardForm({ editingCard, onCancel }) {
-  const { addCard, updateCard } = useCards()
+  const { addCard, updateCard, navigate } = useCards()
   const [front, setFront] = useState(editingCard?.front || "")
   const [back, setBack] = useState(editingCard?.back || "")
 
@@ -19,6 +20,9 @@ export function CardForm({ editingCard, onCancel }) {
       updateCard(editingCard.id, { front: front.trim(), back: back.trim() })
     } else {
       addCard(front.trim(), back.trim())
+
+      toast.success("Card added successfully!")
+      
     }
 
     setFront("")
@@ -67,7 +71,7 @@ export function CardForm({ editingCard, onCancel }) {
                 Cancel
               </Button>
             )}
-            <Button type="submit">{editingCard ? "Update Card" : "Add Card"}</Button>
+            <Button type="submit" className='bg-blue-500 text-white shadow-[0_0_10px_bg-blue-600] hover:bg-blue-400 hover:text-white hover:shadow-[0_0_10px_bg-blue-600]'>{editingCard ? "Update Card" : "Add Card"}</Button>
           </div>
         </form>
       </CardContent>
