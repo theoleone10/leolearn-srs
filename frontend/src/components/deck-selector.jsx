@@ -82,7 +82,6 @@ export function DeckSelector() {
           const cardCount = getCardCount(deck)
           const dueCount = getDueCount(deck)
           const isSelected = deck.id === currentDeck
-
           return (
             <Card
               key={deck.id}
@@ -90,12 +89,15 @@ export function DeckSelector() {
                 isSelected ? "ring-2 ring-blue-500 bg-blue-50" : ""
               }`}
               onClick={() => setCurrentDeck(deck.id)}
+              onDoubleClick={() => {navigate('/study')}}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <BookOpen className="h-5 w-5" />
+                    <CardTitle className="text-lg flex items-center gap-2" >
+                      
+                              
+                      <BookOpen className="h-5 w-5"   />
                       {deck.name}
                     </CardTitle>
                   </div>
