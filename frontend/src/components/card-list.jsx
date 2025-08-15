@@ -16,7 +16,7 @@ export function CardList({ onEditCard }) {
   const [back, setBack] = useState("")
 
   const [editingCard, setEditingCard] = useState(null)
-  
+
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!front.trim() || !back.trim()) return
@@ -25,8 +25,8 @@ export function CardList({ onEditCard }) {
     // toast.success("Card updated successfully!")
 
     setEditingCard(null)
-      
-    }
+
+  }
 
   if (!currentDeck || currentDeck.cards.length === 0) {
     return (
@@ -76,99 +76,87 @@ export function CardList({ onEditCard }) {
           const isOverdue = nextReview <= new Date()
 
           return (
-              editingCard?.id !== card.id ? (
-<Card key={card.id} className={`transition-all ${isOverdue ? "border-orange-200 bg-orange-50" : ""}`}>
-              <CardHeader className="">
-                <div className="flex items-center justify-between">
-                  <p className="whitespace-pre-wrap">{isFlipped ? card.back : card.front}</p>
-                  <div className="flex gap-1">
-                    <div className="flex items-center gap-2">
+            editingCard?.id !== card.id ? (
+              <Card key={card.id} className={`transition-all ${isOverdue ? "border-orange-200 bg-orange-50" : ""}`}>
+                <CardHeader className="">
+                  <div className="flex items-center justify-between">
+                    <p className="whitespace-pre-wrap">{isFlipped ? card.back : card.front}</p>
+                    <div className="flex gap-1">
+                      <div className="flex items-center gap-2">
 
-                      {!isOverdue && <Badge variant="outline">{getIntervalText((nextReview - new Date())/(1000 * 60 * 60 * 24))}</Badge>}
-                      {isOverdue && <Badge variant="destructive">Due for review</Badge>}
-                    </div>
-                    {/* <CardTitle className="text-base">{isFlipped ? "Answer:" : "Question:"}</CardTitle> */}
-                  {/* </div>
+                        {!isOverdue ? <Badge variant="outline">{getIntervalText((nextReview - new Date()) / (1000 * 60 * 60 * 24))}</Badge>
+                          : <Badge variant="destructive">Due for review</Badge>}
+                      </div>
+                      {/* <CardTitle className="text-base">{isFlipped ? "Answer:" : "Question:"}</CardTitle> */}
+                      {/* </div>
                   <div className="flex gap-1"> */}
-                    <Button variant="ghost" size="sm" onClick={() => toggleCardFlip(card.id)}>
-                      {!isFlipped ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => {setEditingCard(card)
-                      
-  setFront(card.front)
-  setBack(card.back)
-                    }}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => deleteCard(card.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              {/* <CardContent>
-                <div className="mt-1 text-xs text-muted-foreground">
-                  <p>Next review: {nextReview.toLocaleDateString()}</p>
-                  <p>Repetitions: {card.repetitions}</p>
-                  {card.lastReviewed && <p>Last reviewed: {new Date(card.lastReviewed).toLocaleDateString()}</p>}
-                </div>
-              </CardContent> */}
-            </Card>
-              ) : (
+                      <Button variant="ghost" size="sm" onClick={() => toggleCardFlip(card.id)}>
+                        {!isFlipped ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        setEditingCard(card)
 
-            <Card key={card.id} className={`transition-all ${isOverdue ? "border-orange-200 bg-orange-50" : ""}`}>
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant={getDifficultyColor(card.difficulty)}>
-                        Difficulty: {card.difficulty.toFixed(1)}
-                      </Badge>
-                      <Badge variant="outline">{getIntervalText(card.interval)}</Badge>
-                      {isOverdue && <Badge variant="destructive">Due for review</Badge>}
+                        setFront(card.front)
+                        setBack(card.back)
+                      }}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteCard(card.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <CardTitle className="text-base">{isFlipped ? "Answer:" : "Question:"}</CardTitle>
                   </div>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="sm" onClick={() => toggleCardFlip(card.id)}>
-                      {isFlipped ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => {onEditCard?.(card)
+                </CardHeader>
+              </Card>
+            ) : (
+
+              <Card key={card.id} className={`transition-all ${isOverdue ? "border-orange-200 bg-orange-50" : ""}`}>
+                <CardHeader className="">
+                  <div className="flex items-center justify-between w-full">
+                  <CardTitle className="whitespace-pre-wrap text-">Edit Card</CardTitle>
+                    <div className="flex-1 gap-1">
                       
-                    }}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => deleteCard(card.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    </div>
+                  <div className="flex gap-1">
+                  {!isOverdue ? <Badge variant="outline">{getIntervalText((nextReview - new Date()) / (1000 * 60 * 60 * 24))}</Badge>
+  : <Badge variant="destructive">Due for review</Badge>}
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        setEditingCard(null)
+
+                      }}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteCard(card.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <label htmlFor="front" className="block text-sm font-medium mb-2">Question: </label>
-                  <Textarea
-                    id="front"
-                    value={front}
-                    onChange={(e) => setFront(e.target.value)}
-                    placeholder={card.front}
-                    className="min-h-[100px]" required/>
-                  <label htmlFor="back" className="block text-sm font-medium mb-2">Answer: </label>
-                  <Textarea
-                    id="back"
-                    value={back}
-                    onChange={(e) => setBack(e.target.value)}
-                    placeholder={card.back}
-                    className="min-h-[100px]" required/>
-                  <div className="flex gap-2 justify-end">
-                    <Button type="button" variant="outline" onClick={() => setEditingCard(null)}>
-                      Cancel
-                    </Button>
-                  <Button type="submit" className='bg-blue-500 text-white shadow-[0_0_10px_bg-blue-600] hover:bg-blue-400 hover:text-white hover:shadow-[0_0_10px_bg-blue-600]'>Update Card</Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <label htmlFor="front" className="block text-sm font-medium mb-2">Question: </label>
+                    <Textarea
+                      id="front"
+                      value={front}
+                      onChange={(e) => setFront(e.target.value)}
+                      placeholder={card.front}
+                      className="min-h-[100px]" required />
+                    <label htmlFor="back" className="block text-sm font-medium mb-2">Answer: </label>
+                    <Textarea
+                      id="back"
+                      value={back}
+                      onChange={(e) => setBack(e.target.value)}
+                      placeholder={card.back}
+                      className="min-h-[100px]" required />
+                    <div className="flex gap-2 justify-end">
+                      <Button type="button" variant="outline" onClick={() => setEditingCard(null)}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" className='bg-blue-500 text-white shadow-[0_0_10px_bg-blue-600] hover:bg-blue-400 hover:text-white hover:shadow-[0_0_10px_bg-blue-600]'>Update Card</Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
             )
           )
         })}
