@@ -72,7 +72,7 @@ export function StudyPage() {
                   {cardsForReview.length} cards ready to review
                 </Badge>
               </div>
-              <Button onClick={handleStartStudy} className="w-full" size="lg">
+              <Button onClick={handleStartStudy} className="w-full bg-blue-500 text-white shadow-[0_0_10px_bg-blue-600] hover:bg-blue-400 hover:text-white hover:shadow-[0_0_10px_bg-blue-600]" size="lg">
                 <Brain className="h-5 w-5 mr-2" />
                 Start Study Session
               </Button>

@@ -26,9 +26,11 @@ export function StudySession({ onComplete }) {
 
   useEffect(() => {
     const reviewCards = getCardsForReview()
+    console.log("Review Cards:", reviewCards);
+    
     setCards(reviewCards)
     setSessionStats((prev) => ({ ...prev, total: reviewCards.length }))
-  }, [getCardsForReview])
+  }, [])
 
   if (!currentDeck) {
     return (
@@ -66,7 +68,7 @@ export function StudySession({ onComplete }) {
     let newInterval = interval
     let newRepetitions = repetitions
 
-    if (quality >= 3) {
+    if (difficulty >= 3) {
       if (repetitions === 0) {
         newInterval = 1
       } else if (repetitions === 1) {
@@ -96,28 +98,31 @@ export function StudySession({ onComplete }) {
   }
 
   const handleAnswer = (quality) => {
-    const updates = calculateNextReview(currentCard.difficulty, currentCard.interval, currentCard.repetitions, quality)
-
-    updateCard(currentCard.id, updates)
-
-    // Update session stats
-    const qualityNames = ["again", "hard", "good", "easy"]
-    const qualityName = qualityNames[quality - 1] || "again"
-
+    if (!currentCard) return;
+    const updates = calculateNextReview(currentCard.difficulty, currentCard.interval, currentCard.repetitions, quality);
+    updateCard(currentCard.id, updates);
+  
     setSessionStats((prev) => ({
       ...prev,
       completed: prev.completed + 1,
-      [qualityName]: prev[qualityName] + 1,
-    }))
-
-    // Move to next card or complete session
-    if (currentCardIndex < cards.length - 1) {
-      setCurrentCardIndex((prev) => prev + 1)
-      setShowAnswer(false)
+      again: quality === 1 ? prev.again + 1 : prev.again,
+      hard: quality === 2 ? prev.hard + 1 : prev.hard,
+      good: quality === 3 ? prev.good + 1 : prev.good,
+      easy: quality === 4 ? prev.easy + 1 : prev.easy,
+    }));
+  
+    const updatedCards = cards.filter((_, idx) => idx !== currentCardIndex);
+    setCards(updatedCards);
+  
+    if (updatedCards.length > 0) {
+      setCurrentCardIndex(Math.min(currentCardIndex, updatedCards.length - 1));
     } else {
-      onComplete?.()
+      onComplete();
     }
-  }
+  
+    setShowAnswer(false);
+  };
+  
 
   return (
     <div className="space-y-6">
@@ -129,22 +134,23 @@ export function StudySession({ onComplete }) {
             {sessionStats.completed} / {sessionStats.total}
           </span>
         </div>
-        <Progress value={progress} className="w-full" />
+        <div className="w-full max-w-lg mx-auto"> {/* Add a container with a max width */}
+          <Progress value={progress} className="w-full" />
+        </div>
       </div>
 
       {/* Current Card */}
       <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader>
+        {/* <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">{showAnswer ? "Answer" : "Question"}</CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant="outline">
                 Card {currentCardIndex + 1} of {cards.length}
               </Badge>
-              <Badge variant="secondary">Difficulty: {currentCard.difficulty.toFixed(1)}</Badge>
             </div>
           </div>
-        </CardHeader>
+        </CardHeader> */}
         <CardContent className="space-y-6">
           <div className="min-h-[120px] flex items-center justify-center">
             <p className="text-lg text-center whitespace-pre-wrap">
@@ -152,7 +158,10 @@ export function StudySession({ onComplete }) {
             </p>
           </div>
 
-          {!showAnswer ? (
+          
+        </CardContent>
+      </Card>
+      {!showAnswer ? (
             <div className="flex justify-center">
               <Button onClick={() => setShowAnswer(true)} className="flex items-center gap-2">
                 <Eye className="h-4 w-4" />
@@ -166,16 +175,16 @@ export function StudySession({ onComplete }) {
                 <Button
                   variant="destructive"
                   onClick={() => handleAnswer(1)}
-                  className="flex flex-col gap-1 h-auto py-3"
+                  className="flex flex-col gap-1 h-auto py-3 bg-red-500 hover:bg-red-600"
                 >
                   <span className="font-semibold">Again</span>
                   <span className="text-xs opacity-90">&lt; 1 day</span>
                 </Button>
-                <Button variant="secondary" onClick={() => handleAnswer(2)} className="flex flex-col gap-1 h-auto py-3">
+                <Button variant="secondary" onClick={() => handleAnswer(2)} className="flex flex-col gap-1 h-auto py-3 bg-yellow-300 hover:bg-yellow-400">
                   <span className="font-semibold">Hard</span>
                   <span className="text-xs opacity-90">1-3 days</span>
                 </Button>
-                <Button variant="default" onClick={() => handleAnswer(3)} className="flex flex-col gap-1 h-auto py-3">
+                <Button variant="default" onClick={() => handleAnswer(3)} className="flex flex-col gap-1 h-auto py-3 bg-blue-500 hover:bg-blue-600">
                   <span className="font-semibold">Good</span>
                   <span className="text-xs opacity-90">4-7 days</span>
                 </Button>
@@ -190,8 +199,6 @@ export function StudySession({ onComplete }) {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
 
       {/* Session Stats */}
       {sessionStats.completed > 0 && (
@@ -224,3 +231,7 @@ export function StudySession({ onComplete }) {
     </div>
   )
 }
+
+// const updateCard = (id, updates) => {
+//   dispatch({ type: "UPDATE_CARD", payload: { id, updates } });
+// };

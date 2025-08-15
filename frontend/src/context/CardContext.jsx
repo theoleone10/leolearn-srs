@@ -104,6 +104,8 @@ export function CardProvider({ children }) {
   }
 
   const updateCard = (id, updates) => {
+    console.log("Updating card with ID:", id);
+    console.log("Updates:", updates);
     dispatch({ type: "UPDATE_CARD", payload: { id, updates } })
   }
 

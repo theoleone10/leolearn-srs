@@ -20,7 +20,7 @@ export function EditCardPage() {
   return (
     <div className="space-y-8">
       {/* <DeckSelector /> */}
-      <CardForm editingCard={editingCard} onCancel={handleCancelEdit} />
+      {/* <CardForm editingCard={editingCard} onCancel={handleCancelEdit} /> */}
       <CardList onEditCard={handleEditCard} />
     </div>
   )

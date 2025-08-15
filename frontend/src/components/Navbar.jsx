@@ -4,32 +4,7 @@ import { BookOpen, Brain, BarChart3 } from "lucide-react"
 // import { cn } from "../../lib/utils"
 
 const Navbar = () => {
-    // const [visible, setVisible] = useState(false);
-
-    // const {setShowSearch, showSearch, getCardCount, navigate, token, setToken, setCartItems} = useContext(ShopContext);
-
-
-    // const location = useLocation();
-
-    // const searchNavigate = () => {
-    //     if (!location.pathname.includes('collection')) {
-    //         navigate('/collection');
-    //         setShowSearch(true);
-    //     } else {
-    //         setShowSearch(!showSearch);
-    //     }
-        
-    // }
-
-    
-
-    // const logout = () => {
-    //     navigate('/login');
-    //     localStorage.removeItem('token');
-    //     setToken('');
-    //     setCartItems({});
-        
-    // }
+ 
 
   return (
     <div className='w-full max-w-6xl mx-auto-20 lg:mx-auto'>
