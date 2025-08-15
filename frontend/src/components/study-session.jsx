@@ -5,7 +5,7 @@ import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Badge } from "./ui/badge"
 import { Progress } from "./ui/progress"
-import { Eye, CheckCircle } from "lucide-react"
+import { Eye, CheckCircle, ArrowLeft } from "lucide-react"
 import { useCards } from "../context/CardContext"
 
 export function StudySession({ onComplete }) {
@@ -126,6 +126,17 @@ export function StudySession({ onComplete }) {
 
   return (
     <div className="space-y-6">
+
+      <div className="flex justify-start mt-4">
+        <Button 
+          onClick={onComplete} 
+          className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2 px-4 py-2">
+          <ArrowLeft className="h-5 w-5" />
+          Exit
+        </Button>
+      </div>
+
+
       {/* Progress Bar */}
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
@@ -134,9 +145,9 @@ export function StudySession({ onComplete }) {
             {sessionStats.completed} / {sessionStats.total}
           </span>
         </div>
-        <div className="w-full max-w-lg mx-auto"> {/* Add a container with a max width */}
+        {/* <div className="w-full max-w-lg mx-auto"> Add a container with a max width */}
           <Progress value={progress} className="w-full" />
-        </div>
+        {/* </div> */}
       </div>
 
       {/* Current Card */}
@@ -152,19 +163,40 @@ export function StudySession({ onComplete }) {
           </div>
         </CardHeader> */}
         <CardContent className="space-y-6">
-          <div className="min-h-[120px] flex items-center justify-center">
-            <p className="text-lg text-center whitespace-pre-wrap">
-              {showAnswer ? currentCard.back : currentCard.front}
-            </p>
-          </div>
+        <div
+  className={
+    `min-h-[300px] p-4 ` +
+    (showAnswer
+      ? `grid place-items-center grid-rows-[1fr_auto_1fr]`
+      : `flex items-center justify-center`)
+  }
+>
+  <p className="w-full text-lg text-center whitespace-pre-wrap">
+    {currentCard.front}
+  </p>
+
+  {showAnswer && (
+    <>
+      {/* Divider sized by container, not text */}
+      <div className="w-2/3 sm:w-1/2 h-px bg-black my-4" />
+      {/* or: <div className="w-[60%] h-px bg-border my-4" /> */}
+
+      <p className="w-full text-lg text-center whitespace-pre-wrap">
+        {currentCard.back}
+      </p>
+    </>
+  )}
+</div>
+          
 
           
         </CardContent>
+      
       </Card>
       {!showAnswer ? (
             <div className="flex justify-center">
-              <Button onClick={() => setShowAnswer(true)} className="flex items-center gap-2">
-                <Eye className="h-4 w-4" />
+              <Button onClick={() => setShowAnswer(true)} className="flex items-center text-white gap-2 bg-blue-500 hover:bg-blue-600">
+                <Eye className="h-4 w-4 " />
                 Show Answer
               </Button>
             </div>
@@ -231,7 +263,3 @@ export function StudySession({ onComplete }) {
     </div>
   )
 }
-
-// const updateCard = (id, updates) => {
-//   dispatch({ type: "UPDATE_CARD", payload: { id, updates } });
-// };

@@ -7,24 +7,17 @@ import { Badge } from "../components/ui/badge"
 import { StudySession } from "../components/study-session"
 import { Brain, BookOpen } from "lucide-react"
 import { useCards } from "../context/CardContext"
+import { useNavigate } from "react-router-dom"
 
 export function StudyPage() {
   const { getCurrentDeck, getCardsForReview } = useCards()
-  const [isStudying, setIsStudying] = useState(false)
+  const navigate = useNavigate()
 
   const currentDeck = getCurrentDeck()
   const cardsForReview = getCardsForReview()
 
   const handleStartStudy = () => {
-    setIsStudying(true)
-  }
-
-  const handleCompleteStudy = () => {
-    setIsStudying(false)
-  }
-
-  if (isStudying) {
-    return <StudySession onComplete={handleCompleteStudy} />
+    navigate("/study/session")
   }
 
   if (!currentDeck) {
@@ -38,6 +31,7 @@ export function StudyPage() {
   }
 
   return (
+    <>
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-2">Study Session</h2>
@@ -90,5 +84,5 @@ export function StudyPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  </>)
 }
