@@ -45,7 +45,7 @@ export function DeckSelector() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Your Decks</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -104,7 +104,7 @@ export function DeckSelector() {
                   <Button 
                     variant="edit"
                     size="sm"
-                    onClick={() => navigate('/add-card')}
+                    onClick={() => navigate('/add-card?edit=false')}
                     className="text-gray-500 hover:text-gray-700"
                   >
                     <Plus className="h-4 w-4"/>

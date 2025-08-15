@@ -7,21 +7,21 @@ import { DeckSelector } from "../components/deck-selector"
 
 
 export function EditCardPage() {
-    const [editingCard, setEditingCard] = useState(null)
+    // const [editingCard, setEditingCard] = useState(null)
 
-    const handleEditCard = (card) => {
-      setEditingCard(card)
-    }
+    // const handleEditCard = (card) => {
+    //   setEditingCard(card)
+    // }
   
-    const handleCancelEdit = () => {
-      setEditingCard(null)
-    }
+    // const handleCancelEdit = () => {
+    //   setEditingCard(null)
+    // }
 
   return (
     <div className="space-y-8">
       {/* <DeckSelector /> */}
       {/* <CardForm editingCard={editingCard} onCancel={handleCancelEdit} /> */}
-      <CardList onEditCard={handleEditCard} />
+      <CardList/>
     </div>
   )
 }

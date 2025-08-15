@@ -20,7 +20,7 @@ const Navbar = () => {
                 `
             }>
                 <BookOpen className="h-4 w-4" />
-                Cards
+                Decks
             </NavLink>
             
             <NavLink to='/study' className={({ isActive }) =>
