@@ -25,7 +25,7 @@ function AppContent() {
         <ToastContainer />
           {/* <Navbar/> */}
 
-          {location.pathname !== '/study/session' && location.pathname !== '/add-card' && <Navbar/>}
+          {location.pathname !== '/study/session' && location.pathname !== '/add-card' && location.pathname !== '/edit-deck' && <Navbar/>}
           <Routes>
             <Route path="/" element={<CardsPage />} />
             <Route path="/study" element={<StudyPage />} />
