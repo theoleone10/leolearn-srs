@@ -125,29 +125,36 @@ export function CardProvider({ children }) {
           version: f.version,
         }))
         dispatch({ type: "SET_CARDS", payload: { cards } })
+
       })
       .catch((err) => console.error(err))
   }, [])
 
   const addCard = async (front, back) => {
+
+    const currentDeck = state.decks.find(d => d.id === state.currentDeck)
+    const lastCard = currentDeck?.cards[currentDeck.cards.length - 1]
+
+    // console.log(state);
+
     const now = new Date()
     const payload = {
       frontText: front,
       backText: back,
       dateCreated: now.toISOString(),
-      lastReviewed: now.toISOString(),
       reviewIntervalDays: 1,
       easeFactor: 2.5,
       repetitions: 0,
-      nextReviewDate: new Date(now.getTime() + 86400000).toISOString(),
+      nextReviewDate: now.toISOString(),
       deckId: parseInt(state.currentDeck),
     }
-    console.log(payload);
+    // console.log(payload);
     
     try {
-      await createFlashcard(payload)
+      const saved = await createFlashcard(payload)
+      
       const card = {
-        id: saved.id.toString(),
+        id: (parseInt(lastCard?.id) + 1).toString() || "1",
         front: saved.frontText,
         back: saved.backText,
         difficulty: saved.easeFactor,
@@ -155,10 +162,15 @@ export function CardProvider({ children }) {
         repetitions: saved.repetitions,
         nextReview: saved.nextReviewDate,
         createdAt: saved.dateCreated,
-        lastReviewed: saved.lastReviewed,
+        lastReviewed: null,
         version: saved.version,
       }
       dispatch({ type: "ADD_CARD", payload: card })
+
+      console.log(state);
+
+      
+      
     } catch (e) {
       console.error(e)
     }

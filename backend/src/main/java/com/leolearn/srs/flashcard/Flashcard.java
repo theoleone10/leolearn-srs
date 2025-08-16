@@ -23,8 +23,8 @@ public record Flashcard(
 )
 {
     public Flashcard {
-        if(!nextReviewDate.isAfter(lastReviewed)) {
-            throw new IllegalArgumentException("next Review Date must be after last Reviewed");
-        }
+        // if(!nextReviewDate.isAfter(lastReviewed)) {
+        //     throw new IllegalArgumentException("next Review Date must be after last Reviewed");
+        // }
     }
 }

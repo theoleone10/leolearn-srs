@@ -35,13 +35,13 @@ public class JdbcClientFlashcardRepository {
 
     public void create(Flashcard flashcard) {
         var updated = jdbcClient.sql(
-            "insert into flashcard (id, frontText, backText, dateCreated, lastReviewed, reviewIntervalDays, easeFactor, repetitions, nextReviewDate, deckId, version) values (max(id), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) from flashcard")
+            "insert into flashcard (id, frontText, backText, dateCreated, lastReviewed, reviewIntervalDays, easeFactor, repetitions, nextReviewDate, deckId, version) values (max(id) + 1, ?, ?, ?, null, ?, ?, ?, ?, ?, ?) from flashcard")
             .params(List.of(
-                flashcard.id(),
+                // flashcard.id(),
                 flashcard.frontText(),
                 flashcard.backText(),
                 flashcard.dateCreated(),
-                flashcard.lastReviewed(),
+                // flashcard.lastReviewed(),
                 flashcard.reviewIntervalDays(),
                 flashcard.easeFactor(),
                 flashcard.repetitions(),
