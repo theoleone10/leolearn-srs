@@ -31,7 +31,7 @@ public class JdbcClientDeckRepository {
     }
 
     public void create(Deck deck) {
-        var updated = jdbcClient.sql("insert into deck (id,name, description, dateCreated) values (?, ?, ?, ?)")
+        var updated = jdbcClient.sql("insert into deck (id,name, description, date_created) values (coalesce(max(id),0) + 1, ?, ?, ?) from deck")
             .params(List.of(deck.id(),deck.name(), deck.description(), deck.dateCreated()))
             .update();
         

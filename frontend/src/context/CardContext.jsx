@@ -3,7 +3,7 @@
 import { createContext, useContext, useReducer, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard } from "../lib/api"
+import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard, createDeck } from "../lib/api"
 
 const CardContext = createContext()
 
@@ -12,7 +12,8 @@ const initialState = {
     {
       id: "1",
       name: "Default Deck",
-      cards: [],
+      description: "This is the default deck",
+      createdAt: new Date().toISOString(),
     },
   ],
   currentDeck: "1",
@@ -60,14 +61,9 @@ case "SET_CARDS":
       }
 
       case "ADD_DECK": {
-      const newDeck = {
-        id: Date.now().toString(),
-        name: action.payload.name,
-        cards: [],
-      }
       return {
         ...state,
-        decks: [...state.decks, newDeck],
+        decks: [...state.decks, action.payload],
       }
     }
 
@@ -165,6 +161,7 @@ export function CardProvider({ children }) {
       }
       dispatch({ type: "ADD_CARD", payload: card })
 
+      console.log(state);
       
       
     } catch (e) {
@@ -207,20 +204,79 @@ export function CardProvider({ children }) {
     }
   }
 
-  const addDeck = (name) => {
-    dispatch({ type: "ADD_DECK", payload: { name } })
+  const addDeck = async (name) => {
+    try {
+      const dateCreated = new Date().toISOString().replace('Z', ''); // ISO local datetime
+  
+      const { data } = await axios.post(
+        "http://localhost:8080/api/decks",
+        {
+          name,                     // use the param you passed in
+          description: "",
+          dateCreated,              // no Z
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+  
+      const deck = {
+        id: data.id?.toString(),   // axios puts payload under .data
+        name: data.name,
+        description: data.description,
+        createdAt: data.dateCreated,
+      };
+  
+      dispatch({ type: "ADD_DECK", payload: deck });
+    } catch (e) {
+      console.error("create deck failed", e?.response?.status, e?.response?.data || e);
+    }
+  };
+
+  const updateDeck = async (id, updates) => {
+    try {
+      const { data } = await axios.put(
+        "http://localhost:8080/api/decks/" + id,
+        {                 
+          updates,              
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+  
+      const deck = {
+        id: id,   // axios puts payload under .data
+        name: data.name,
+        description: data.description,
+        createdAt: data.dateCreated,
+      };
+  
+      dispatch({ type: "UPDATE_DECK", payload: { id, updates } });
+    } catch (e) {
+      console.error("update deck failed", e?.response?.status, e?.response?.data || e);
+    }
   }
 
-  const updateDeck = (id, updates) => {
-    dispatch({ type: "UPDATE_DECK", payload: { id, updates } })
+  const deleteDeck = async (id) => {
+    try {
+      const { data } = await axios.delete(
+        "http://localhost:8080/api/decks/" + id
+      );
+  
+      dispatch({ type: "DELETE_DECK", payload: { id } });
+    } catch (e) {
+      console.error("delete deck failed", e?.response?.status, e?.response?.data || e);
+    }
+    
   }
 
-  const deleteDeck = (id) => {
-    dispatch({ type: "DELETE_DECK", payload: { id } })
-  }
-
-  const setCurrentDeck = (deckId) => {
-    dispatch({ type: "SET_CURRENT_DECK", payload: { deckId } })
+  const setCurrentDeck = async (deckId) => {
+    try {
+      const { data } = await axios.get(
+        "http://localhost:8080/api/decks/" + deckId
+      );
+  
+      dispatch({ type: "SET_CURRENT_DECK", payload: { deckId } });
+    } catch (e) {
+      console.error("set current deck failed", e?.response?.status, e?.response?.data || e);
+    }
   }
 
 
@@ -240,6 +296,7 @@ export function CardProvider({ children }) {
     updateCard,
     deleteCard,
     addDeck,
+    updateDeck,
     deleteDeck,
     setCurrentDeck,
     getCurrentDeck,

@@ -35,7 +35,7 @@ public class JdbcClientFlashcardRepository {
 
     public void create(Flashcard flashcard) {
         var updated = jdbcClient.sql(
-            "insert into flashcard (id, frontText, backText, dateCreated, lastReviewed, reviewIntervalDays, easeFactor, repetitions, nextReviewDate, deckId, version) values (max(id) + 1, ?, ?, ?, null, ?, ?, ?, ?, ?, ?) from flashcard")
+            "insert into flashcard (id, frontText, backText, dateCreated, lastReviewed, reviewIntervalDays, easeFactor, repetitions, nextReviewDate, deckId, version) values (coalesce(max(id),0) + 1, ?, ?, ?, null, ?, ?, ?, ?, ?, ?) from flashcard")
             .params(List.of(
                 // flashcard.id(),
                 flashcard.frontText(),
