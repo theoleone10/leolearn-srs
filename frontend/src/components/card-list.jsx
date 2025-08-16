@@ -55,9 +55,9 @@ export function CardList({ onEditCard }) {
   }
 
   const getIntervalText = (interval) => {
-    if (interval < 1) return "New"
+    if (interval < 1) return "Soon"
     if (interval === 1) return "1 day"
-    if (interval < 30) return `${Math.round(interval)} days`
+    if (interval <= 30) return `${(interval)} days`
     return `${Math.round(interval / 30)} months`
   }
 
@@ -73,7 +73,8 @@ export function CardList({ onEditCard }) {
         {currentDeck.cards.map((card) => {
           const isFlipped = flippedCards.has(card.id)
           const nextReview = new Date(card.nextReview)
-          const isOverdue = nextReview.toLocaleDateString() <= new Date().toLocaleDateString()
+          const isOverdue = card.nextReview <= new Date().toISOString()
+
 
           return (
             editingCard?.id !== card.id ? (
@@ -82,9 +83,9 @@ export function CardList({ onEditCard }) {
                   <div className="flex items-center justify-between">
                     <p className="whitespace-pre-wrap">{isFlipped ? card.back : card.front}</p>
                     <div className="flex gap-1">
-                      <div className="flex items-center gap-2">
+                      <div className={`flex items-center gap-2`}>
 
-                        {!isOverdue ? <Badge variant="outline">{getIntervalText((nextReview - new Date()) / (1000 * 60 * 60 * 24))}</Badge>
+                        {!isOverdue ? <Badge variant="outline" className=' bg-blue-300'>{getIntervalText(Math.round((nextReview - new Date()) / (1000 * 60 * 60 * 24)))}</Badge>
                           : <Badge variant="destructive">Due for review</Badge>}
                       </div>
                       {/* <CardTitle className="text-base">{isFlipped ? "Answer:" : "Question:"}</CardTitle> */}

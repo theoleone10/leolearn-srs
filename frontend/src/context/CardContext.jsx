@@ -362,7 +362,7 @@ export function CardProvider({ children }) {
 
     const now = new Date()
 
-    return currentDeck.cards.filter((card) => new Date(card.nextReview).toLocaleDateString() <= now.toLocaleDateString())
+    return currentDeck.cards.filter((card) => card.nextReview <= now.toISOString())
   }
 
   const value = {
