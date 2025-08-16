@@ -7,17 +7,9 @@ import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard
 
 const CardContext = createContext()
 
-const initialState = {
-  decks: [
-    {
-      id: "1",
-      name: "Default Deck",
-      description: "This is the default deck",
-      createdAt: new Date().toISOString(),
-      cards: [],
-    },
-  ],
-  currentDeck: "1",
+const emptyState = {
+  decks: [],
+  currentDeck: null,
 }
 
 function cardReducer(state, action) {
@@ -137,8 +129,30 @@ function cardReducer(state, action) {
 
 
 export function CardProvider({ children }) {
-  const [state, dispatch] = useReducer(cardReducer, initialState) 
-  const navigate = useNavigate();
+  const [state, dispatch] = useReducer(
+    cardReducer,
+    undefined,
+    () => {
+      if (typeof window !== "undefined") {
+        const stored = window.localStorage.getItem("cardState")
+        if (stored) {
+          try {
+            return JSON.parse(stored)
+          } catch (e) {
+            console.error("failed to parse stored card state", e)
+          }
+        }
+      }
+      return emptyState
+    }
+  )
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("cardState", JSON.stringify(state))
+    }
+  }, [state])
 
   const getCurrentDeck = () => {
     return state.decks.find((deck) => deck.id === state.currentDeck)
