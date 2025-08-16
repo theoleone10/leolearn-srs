@@ -73,7 +73,7 @@ export function CardList({ onEditCard }) {
         {currentDeck.cards.map((card) => {
           const isFlipped = flippedCards.has(card.id)
           const nextReview = new Date(card.nextReview)
-          const isOverdue = nextReview <= new Date()
+          const isOverdue = nextReview.toLocaleDateString() <= new Date().toLocaleDateString()
 
           return (
             editingCard?.id !== card.id ? (
