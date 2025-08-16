@@ -135,7 +135,6 @@ export function CardProvider({ children }) {
     const currentDeck = state.decks.find(d => d.id === state.currentDeck)
     const lastCard = currentDeck?.cards[currentDeck.cards.length - 1]
 
-    // console.log(state);
 
     const now = new Date()
     const payload = {
@@ -148,7 +147,6 @@ export function CardProvider({ children }) {
       nextReviewDate: now.toISOString(),
       deckId: parseInt(state.currentDeck),
     }
-    // console.log(payload);
     
     try {
       const saved = await createFlashcard(payload)
@@ -166,8 +164,6 @@ export function CardProvider({ children }) {
         version: saved.version,
       }
       dispatch({ type: "ADD_CARD", payload: card })
-
-      console.log(state);
 
       
       
@@ -230,10 +226,12 @@ export function CardProvider({ children }) {
 
   const getCardsForReview = () => {
     const currentDeck = getCurrentDeck()
+    
     if (!currentDeck) return []
 
     const now = new Date()
-    return currentDeck.cards.filter((card) => new Date(card.nextReview) <= now)
+
+    return currentDeck.cards.filter((card) => new Date(card.nextReview).toLocaleDateString() <= now.toLocaleDateString())
   }
 
   const value = {
