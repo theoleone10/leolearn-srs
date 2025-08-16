@@ -46,8 +46,8 @@ public class DeckController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    void create(@Valid @RequestBody Deck deck) {
-        deckRepository.save(deck);
+    Deck create(@Valid @RequestBody Deck deck) {
+        return deckRepository.save(deck);
     }
 
     // put

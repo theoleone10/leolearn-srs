@@ -78,13 +78,13 @@ export function DeckSelector() {
       </div>
 
       <div className="grid gap-4 grid-cols-1" >
-        {decks.map((deck) => {
+        {decks.map((deck, index) => {
           const cardCount = getCardCount(deck)
           const dueCount = getDueCount(deck)
           const isSelected = deck.id === currentDeck
           return (
             <Card
-              key={deck.id}
+              key={`${deck.id}-${index}`}
               className={`cursor-pointer transition-all hover:shadow-md ${
                 isSelected ? "ring-2 ring-blue-500 bg-blue-50" : ""
               }`}

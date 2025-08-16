@@ -28,7 +28,7 @@ export function CardList({ onEditCard }) {
 
   }
 
-  if (!currentDeck || currentDeck.cards.length === 0) {
+  if (!currentDeck || !currentDeck.cards || currentDeck.cards.length === 0) {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="flex items-center justify-center py-8">

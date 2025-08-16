@@ -3,7 +3,7 @@
 import { createContext, useContext, useReducer, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard, createDeck } from "../lib/api"
+import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard, createDeck, fetchDeck } from "../lib/api"
 
 const CardContext = createContext()
 
@@ -14,88 +14,124 @@ const initialState = {
       name: "Default Deck",
       description: "This is the default deck",
       createdAt: new Date().toISOString(),
+      cards: [],
     },
   ],
   currentDeck: "1",
 }
 
 function cardReducer(state, action) {
+  const withCardsArray = (deck) => ({ ...deck, cards: Array.isArray(deck.cards) ? deck.cards : [] });
+
   switch (action.type) {
     case "ADD_CARD":
       return {
         ...state,
         decks: state.decks.map((deck) =>
           deck.id === state.currentDeck
-        ? { ...deck, cards: [...deck.cards, action.payload] }
-        : deck,
-    ),
-  }
-case "SET_CARDS":
-  return {
-    ...state,
-    decks: state.decks.map((deck) =>
-      deck.id === state.currentDeck
-        ? { ...deck, cards: action.payload.cards }
-            : deck,
+            ? { ...withCardsArray(deck), cards: [...deck.cards, action.payload] }
+            : deck
         ),
-      }
+      };
+
+    case "SET_CARDS": {
+      const cards = action.payload.cards ?? [];
+      return {
+        ...state,
+        decks: state.decks.map((deck) =>
+          deck.id === state.currentDeck
+            ? { ...withCardsArray(deck), cards }
+            : deck
+        ),
+      };
+    }
 
     case "UPDATE_CARD":
       return {
         ...state,
-        decks: state.decks.map((deck) => ({
-          ...deck,
-          cards: deck.cards.map((card) =>
-            card.id === action.payload.id ? { ...card, ...action.payload.updates } : card,
-          ),
-        })),
-      }
+        decks: state.decks.map((deck) =>
+          deck.id === state.currentDeck
+            ? {
+                ...withCardsArray(deck),
+                cards: deck.cards.map((card) =>
+                  card.id === action.payload.id
+                    ? { ...card, ...action.payload.updates }
+                    : card
+                ),
+              }
+            : deck
+        ),
+      };
 
     case "DELETE_CARD":
       return {
         ...state,
-        decks: state.decks.map((deck) => ({
-          ...deck,
-          cards: deck.cards.filter((card) => card.id !== action.payload.id),
-        })),
-      }
+        decks: state.decks.map((deck) =>
+          deck.id === state.currentDeck
+            ? {
+                ...withCardsArray(deck),
+                cards: deck.cards.filter((card) => card.id !== action.payload.id),
+              }
+            : deck
+        ),
+      };
 
-      case "ADD_DECK": {
+    case "ADD_DECK":
       return {
         ...state,
-        decks: [...state.decks, action.payload],
-      }
+        decks: [...state.decks, withCardsArray(action.payload)],
+      };
+
+    case "SET_DECKS": {
+      // Preserve any existing cards arrays when server decks arrive
+      const incoming = (action.payload.decks ?? []).map((d) => {
+        const existing = state.decks.find((x) => x.id === d.id);
+        return withCardsArray({ ...d, cards: existing?.cards });
+      });
+
+      const nextCurrent =
+        incoming.find((d) => d.id === state.currentDeck)?.id ??
+        incoming[0]?.id ??
+        null;
+
+      return {
+        ...state,
+        decks: incoming,
+        currentDeck: nextCurrent,
+      };
     }
 
     case "UPDATE_DECK":
+      // 🔧 Fix: this should update deck fields, not iterate its cards
       return {
         ...state,
-        decks: state.decks.map((deck) => ({
-          ...deck,
-          cards: deck.cards.map((card) =>
-            card.id === action.payload.id ? { ...card, ...action.payload.updates } : card,
-          ),
-        })),
-      }
+        decks: state.decks.map((deck) =>
+          deck.id === action.payload.id
+            ? { ...withCardsArray(deck), ...action.payload.updates }
+            : deck
+        ),
+      };
 
     case "DELETE_DECK": {
-      const remainingDecks = state.decks.filter((deck) => deck.id !== action.payload.id)
+      const remainingDecks = state.decks.filter((deck) => deck.id !== action.payload.id);
       return {
         ...state,
         decks: remainingDecks,
         currentDeck: remainingDecks.length > 0 ? remainingDecks[0].id : null,
-      }
+      };
     }
+
     case "SET_CURRENT_DECK":
       return {
         ...state,
         currentDeck: action.payload.deckId,
-      }
+      };
 
     default:
-      return state
+      return state;
   }
 }
+
 
 export function CardProvider({ children }) {
   const [state, dispatch] = useReducer(cardReducer, initialState) 
@@ -126,10 +162,25 @@ export function CardProvider({ children }) {
       .catch((err) => console.error(err))
   }, [])
 
-  const addCard = async (front, back) => {
+  
 
-    const currentDeck = state.decks.find(d => d.id === state.currentDeck)
-    const lastCard = currentDeck?.cards[currentDeck.cards.length - 1]
+  useEffect(() => {
+    fetchDeck()
+      .then((data) => {
+        const decks = data.map((f) => ({
+          id: f.id?.toString(),
+          name: f.name,
+          description: f.description,
+          createdAt: f.dateCreated,
+        }))
+        dispatch({ type: "SET_DECKS", payload: { decks } })
+
+      })
+      .catch((err) => console.error(err))
+  }, [])
+
+  const addCard = async (front, back) => {
+    
 
 
     const now = new Date()
@@ -148,7 +199,7 @@ export function CardProvider({ children }) {
       const saved = await createFlashcard(payload)
       
       const card = {
-        id: (parseInt(lastCard?.id) + 1).toString() || "1",
+        id: saved.id?.toString(),
         front: saved.frontText,
         back: saved.backText,
         difficulty: saved.easeFactor,
@@ -171,8 +222,8 @@ export function CardProvider({ children }) {
 
   const updateCard = async (id, updates) => {
     const currentDeck = getCurrentDeck()
-    const existing = currentDeck.cards.find((c) => c.id === id)
-    if (!existing) return
+  const existing = (currentDeck?.cards ?? []).find((c) => c.id === id)
+  if (!existing) return
     const updated = { ...existing, ...updates }
     const payload = {
       id: parseInt(updated.id),
@@ -270,7 +321,8 @@ export function CardProvider({ children }) {
   const setCurrentDeck = async (deckId) => {
     try {
       const { data } = await axios.get(
-        "http://localhost:8080/api/decks/" + deckId
+        "http://localhost:8080/api/decks/" + deckId,
+        { headers: { "Content-Type": "application/json" } }
       );
   
       dispatch({ type: "SET_CURRENT_DECK", payload: { deckId } });
