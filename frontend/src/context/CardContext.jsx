@@ -1,7 +1,9 @@
 "use client"
 
-import { createContext, useContext, useReducer } from "react"
+import { createContext, useContext, useReducer, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard } from "../lib/api"
 
 const CardContext = createContext()
 
@@ -23,23 +25,16 @@ function cardReducer(state, action) {
         ...state,
         decks: state.decks.map((deck) =>
           deck.id === state.currentDeck
-            ? {
-                ...deck,
-                cards: [
-                  ...deck.cards,
-                  {
-                    id: Date.now().toString(),
-                    front: action.payload.front,
-                    back: action.payload.back,
-                    difficulty: 2.5,
-                    interval: 1,
-                    repetitions: 0,
-                    nextReview: new Date(),
-                    createdAt: new Date(),
-                    lastReviewed: null,
-                  },
-                ],
-              }
+        ? { ...deck, cards: [...deck.cards, action.payload] }
+        : deck,
+    ),
+  }
+case "SET_CARDS":
+  return {
+    ...state,
+    decks: state.decks.map((deck) =>
+      deck.id === state.currentDeck
+        ? { ...deck, cards: action.payload.cards }
             : deck,
         ),
       }
@@ -76,6 +71,17 @@ function cardReducer(state, action) {
       }
     }
 
+    case "UPDATE_DECK":
+      return {
+        ...state,
+        decks: state.decks.map((deck) => ({
+          ...deck,
+          cards: deck.cards.map((card) =>
+            card.id === action.payload.id ? { ...card, ...action.payload.updates } : card,
+          ),
+        })),
+      }
+
     case "DELETE_DECK": {
       const remainingDecks = state.decks.filter((deck) => deck.id !== action.payload.id)
       return {
@@ -96,25 +102,109 @@ function cardReducer(state, action) {
 }
 
 export function CardProvider({ children }) {
-  const [state, dispatch] = useReducer(cardReducer, initialState)
-  const navigate = useNavigate(); // Define navigate here
+  const [state, dispatch] = useReducer(cardReducer, initialState) 
+  const navigate = useNavigate();
 
-  const addCard = (front, back) => {
-    dispatch({ type: "ADD_CARD", payload: { front, back } })
+  const getCurrentDeck = () => {
+    return state.decks.find((deck) => deck.id === state.currentDeck)
   }
 
-  const updateCard = (id, updates) => {
-    console.log("Updating card with ID:", id);
-    console.log("Updates:", updates);
-    dispatch({ type: "UPDATE_CARD", payload: { id, updates } })
+  useEffect(() => {
+    fetchFlashcards()
+      .then((data) => {
+        const cards = data.map((f) => ({
+          id: f.id?.toString(),
+          front: f.frontText,
+          back: f.backText,
+          difficulty: f.easeFactor,
+          interval: f.reviewIntervalDays,
+          repetitions: f.repetitions,
+          nextReview: f.nextReviewDate,
+          createdAt: f.dateCreated,
+          lastReviewed: f.lastReviewed,
+          version: f.version,
+        }))
+        dispatch({ type: "SET_CARDS", payload: { cards } })
+      })
+      .catch((err) => console.error(err))
+  }, [])
+
+  const addCard = async (front, back) => {
+    const now = new Date()
+    const payload = {
+      frontText: front,
+      backText: back,
+      dateCreated: now.toISOString(),
+      lastReviewed: now.toISOString(),
+      reviewIntervalDays: 1,
+      easeFactor: 2.5,
+      repetitions: 0,
+      nextReviewDate: new Date(now.getTime() + 86400000).toISOString(),
+      deckId: parseInt(state.currentDeck),
+    }
+    console.log(payload);
+    
+    try {
+      await createFlashcard(payload)
+      const card = {
+        id: saved.id.toString(),
+        front: saved.frontText,
+        back: saved.backText,
+        difficulty: saved.easeFactor,
+        interval: saved.reviewIntervalDays,
+        repetitions: saved.repetitions,
+        nextReview: saved.nextReviewDate,
+        createdAt: saved.dateCreated,
+        lastReviewed: saved.lastReviewed,
+        version: saved.version,
+      }
+      dispatch({ type: "ADD_CARD", payload: card })
+    } catch (e) {
+      console.error(e)
+    }
   }
 
-  const deleteCard = (id) => {
-    dispatch({ type: "DELETE_CARD", payload: { id } })
+  const updateCard = async (id, updates) => {
+    const currentDeck = getCurrentDeck()
+    const existing = currentDeck.cards.find((c) => c.id === id)
+    if (!existing) return
+    const updated = { ...existing, ...updates }
+    const payload = {
+      id: parseInt(updated.id),
+      frontText: updated.front,
+      backText: updated.back,
+      dateCreated: updated.createdAt,
+      lastReviewed: updated.lastReviewed || updated.createdAt,
+      reviewIntervalDays: updated.interval,
+      easeFactor: updated.difficulty,
+      repetitions: updated.repetitions,
+      nextReviewDate: updated.nextReview,
+      deckId: parseInt(currentDeck.id),
+      version: updated.version,
+    }
+    try {
+      const saved = await apiUpdateFlashcard(id, payload)
+      dispatch({ type: "UPDATE_CARD", payload: { id, updates: { ...updates, version: saved.version } } })
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const deleteCard = async (id) => {
+    try {
+      await apiDeleteFlashcard(id)
+      dispatch({ type: "DELETE_CARD", payload: { id } })
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const addDeck = (name) => {
     dispatch({ type: "ADD_DECK", payload: { name } })
+  }
+
+  const updateDeck = (id, updates) => {
+    dispatch({ type: "UPDATE_DECK", payload: { id, updates } })
   }
 
   const deleteDeck = (id) => {
@@ -125,9 +215,6 @@ export function CardProvider({ children }) {
     dispatch({ type: "SET_CURRENT_DECK", payload: { deckId } })
   }
 
-  const getCurrentDeck = () => {
-    return state.decks.find((deck) => deck.id === state.currentDeck)
-  }
 
   const getCardsForReview = () => {
     const currentDeck = getCurrentDeck()
@@ -147,7 +234,7 @@ export function CardProvider({ children }) {
     setCurrentDeck,
     getCurrentDeck,
     getCardsForReview,
-    navigate // Include navigate in the context value
+    navigate, // Include navigate in the context value
   }
 
   return <CardContext.Provider value={value}>{children}</CardContext.Provider>

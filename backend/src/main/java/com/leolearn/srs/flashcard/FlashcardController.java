@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ record ReviewRequest(
 ) {}
 
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/flashcards")
 public class FlashcardController {
@@ -65,8 +67,8 @@ public class FlashcardController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    void create(@Valid @RequestBody Flashcard flashcard) {
-        flashcardRepository.save(flashcard);
+    Flashcard create(@Valid @RequestBody Flashcard flashcard) {
+        return flashcardRepository.save(flashcard);
     }
 
     @PostMapping("/{id}/review")
