@@ -24,58 +24,61 @@ function cardReducer(state, action) {
   const withCardsArray = (deck) => ({ ...deck, cards: Array.isArray(deck.cards) ? deck.cards : [] });
 
   switch (action.type) {
-    case "ADD_CARD":
+    
+    case "ADD_CARD": {
+      const { deckId } = action.payload;
       return {
         ...state,
         decks: state.decks.map((deck) =>
-          deck.id === state.currentDeck
+          deck.id === deckId
             ? { ...withCardsArray(deck), cards: [...deck.cards, action.payload] }
             : deck
         ),
       };
-
+    }
     case "SET_CARDS": {
       const cards = action.payload.cards ?? [];
       return {
         ...state,
-        decks: state.decks.map((deck) =>
-          deck.id === state.currentDeck
-            ? { ...withCardsArray(deck), cards }
-            : deck
-        ),
+        decks: state.decks.map((deck) => ({
+          ...withCardsArray(deck),
+          cards: cards.filter((card) => card.deckId === deck.id),
+        })),
       };
     }
 
-    case "UPDATE_CARD":
+    
+    case "UPDATE_CARD": {
+      const { deckId, id, updates } = action.payload;
       return {
         ...state,
         decks: state.decks.map((deck) =>
-          deck.id === state.currentDeck
+          deck.id === deckId
             ? {
                 ...withCardsArray(deck),
                 cards: deck.cards.map((card) =>
-                  card.id === action.payload.id
-                    ? { ...card, ...action.payload.updates }
-                    : card
+                  card.id === id ? { ...card, ...updates } : card
                 ),
               }
             : deck
         ),
       };
-
-    case "DELETE_CARD":
+    }
+    
+    case "DELETE_CARD": {
+      const { deckId, id } = action.payload;
       return {
         ...state,
         decks: state.decks.map((deck) =>
-          deck.id === state.currentDeck
+          deck.id === deckId
             ? {
                 ...withCardsArray(deck),
-                cards: deck.cards.filter((card) => card.id !== action.payload.id),
+                cards: deck.cards.filter((card) => card.id !== id),
               }
             : deck
         ),
       };
-
+    }
     case "ADD_DECK":
       return {
         ...state,
@@ -155,6 +158,7 @@ export function CardProvider({ children }) {
           createdAt: f.dateCreated,
           lastReviewed: f.lastReviewed,
           version: f.version,
+          deckId: f.deckId?.toString(),
         }))
         dispatch({ type: "SET_CARDS", payload: { cards } })
 
@@ -209,6 +213,7 @@ export function CardProvider({ children }) {
         createdAt: saved.dateCreated,
         lastReviewed: null,
         version: saved.version,
+        deckId: state.currentDeck,
       }
       dispatch({ type: "ADD_CARD", payload: card })
 
@@ -240,7 +245,10 @@ export function CardProvider({ children }) {
     }
     try {
       const saved = await apiUpdateFlashcard(id, payload)
-      dispatch({ type: "UPDATE_CARD", payload: { id, updates: { ...updates, version: saved.version } } })
+      dispatch({
+        type: "UPDATE_CARD",
+        payload: { deckId: currentDeck.id, id, updates: { ...updates, version: saved.version } },
+      })
     } catch (e) {
       console.error(e)
     }
@@ -249,7 +257,8 @@ export function CardProvider({ children }) {
   const deleteCard = async (id) => {
     try {
       await apiDeleteFlashcard(id)
-      dispatch({ type: "DELETE_CARD", payload: { id } })
+      const currentDeck = getCurrentDeck()
+      dispatch({ type: "DELETE_CARD", payload: { deckId: currentDeck.id, id } })
     } catch (e) {
       console.error(e)
     }
