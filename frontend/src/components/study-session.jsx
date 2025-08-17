@@ -25,13 +25,13 @@ export function StudySession({ onComplete }) {
   // --- SRS helpers (match backend logic) ---
 const EASY_BONUS = 1.30;      // rating=4 multiplier
 const VERY_EASY_BONUS = 1.50; // rating=5 multiplier (kept for parity)
-const HARD_SAME_DAY = 0.50;   // rating=1 → 12 hours
+const HARD_SAME_DAY = 0.007;   // rating=1 → 10 minutes
 
 function base1(rate) {
   switch (rate) {
     case 1: return HARD_SAME_DAY; // ~12h
     case 2: return 1.0;           // next day
-    case 3: return 1.0;           // good
+    case 3: return 2.0;           // good
     case 4: return 3.0;           // easy
     case 5: return 5.0;           // very easy
     default: return 1.0;

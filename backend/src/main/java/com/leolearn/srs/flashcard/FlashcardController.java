@@ -39,7 +39,7 @@ public class FlashcardController {
     private static final float EASY_BONUS = 1.30f;       // rating=4 multiplier
     private static final float VERY_EASY_BONUS = 1.50f;  // rating=5 multiplier
 
-    private static final float HARD_SAME_DAY = 0.50f;    // rating=1 -> ~12 hours
+    private static final float HARD_SAME_DAY = 0.007f;    // rating=1 -> ~10 minutes
 
     private static final float VERY_HARD_EASE_DROP = 0.40f; // rating=1
     private static final float HARD_EASE_DROP = 0.20f;      // rating=2
@@ -192,9 +192,9 @@ public class FlashcardController {
 
     private static float base1(int rate) {
         switch (rate) {
-            case 1: return HARD_SAME_DAY; // ~12h
+            case 1: return HARD_SAME_DAY; // ~10 minutes
             case 2: return 1.0f;          // next day
-            case 3: return 1.0f;          // good
+            case 3: return 2.0f;          // good
             case 4: return 3.0f;          // easy
             case 5: return 5.0f;          // very easy
             default: return 1.0f;
