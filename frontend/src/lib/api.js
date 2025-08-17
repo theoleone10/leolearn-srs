@@ -15,6 +15,8 @@ export const deleteFlashcard = (id) => api.delete(`/flashcards/${id}`);
 export const fetchDeck = () => api.get("/decks").then((res) => res.data);
 export const createDeck = (deck) =>
   api.post("/decks", deck).then((res) => res.data);
+export const reviewFlashcard = (id, rating) =>
+  api.post(`/flashcards/${id}/review`, { rating }).then((res) => res.data);
 export const updateDeck = (id, deck) =>
   api.put(`/decks/${id}`, deck).then((res) => res.data);
 export const deleteDeck = (id) => api.delete(`/decks/${id}`);

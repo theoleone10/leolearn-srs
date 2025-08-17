@@ -19,22 +19,9 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
-enum Difficulty {
-    VEASY(4), EASY(3), MEDIUM(2), HARD(1);
-
-    private final int rating;
-
-    Difficulty(int rating) {
-        this.rating = rating;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-}
 
 record ReviewRequest(
-    Difficulty difficulty
+    int rating
 ) {}
 
 
@@ -78,7 +65,7 @@ public class FlashcardController {
 
         float easeFactor = flashcard.easeFactor();
         int repititions = flashcard.repetitions();
-        int rating = request.difficulty().getRating();
+        int rating = request.rating();
         float reviewIntervalDays = flashcard.reviewIntervalDays();
 
         
@@ -111,7 +98,7 @@ public class FlashcardController {
             repititions,
             lastReviewed.plusDays((long) reviewIntervalDays),
             flashcard.deckId(),
-            flashcard.version() == null ? 1 : flashcard.version() + 1
+            flashcard.version()
         );
 
         flashcardRepository.save(updated);

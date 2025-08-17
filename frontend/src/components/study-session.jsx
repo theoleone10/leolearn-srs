@@ -9,7 +9,7 @@ import { Eye, CheckCircle, ArrowLeft } from "lucide-react"
 import { useCards } from "../context/CardContext"
 
 export function StudySession({ onComplete }) {
-  const { getCardsForReview, updateCard, getCurrentDeck } = useCards()
+  const { getCardsForReview, reviewCard, getCurrentDeck } = useCards()
   const [cards, setCards] = useState([])
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
@@ -63,44 +63,9 @@ export function StudySession({ onComplete }) {
   const currentCard = cards[currentCardIndex]
   const progress = (sessionStats.completed / sessionStats.total) * 100
 
-  const calculateNextReview = (difficulty, interval, repetitions, quality) => {
-    let newDifficulty = difficulty
-    let newInterval = interval
-    let newRepetitions = repetitions
-
-    if (difficulty >= 3) {
-      if (repetitions === 0) {
-        newInterval = 1
-      } else if (repetitions === 1) {
-        newInterval = 6
-      } else {
-        newInterval = Math.round(interval * newDifficulty)
-      }
-      newRepetitions += 1
-    } else {
-      newRepetitions = 0
-      newInterval = 1
-    }
-
-    newDifficulty = newDifficulty + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
-    newDifficulty = Math.max(1.3, newDifficulty)
-
-    const nextReview = new Date()
-    nextReview.setDate(nextReview.getDate() + newInterval)
-
-    return {
-      difficulty: newDifficulty,
-      interval: newInterval,
-      repetitions: newRepetitions,
-      nextReview,
-      lastReviewed: new Date(),
-    }
-  }
-
-  const handleAnswer = (quality) => {
+  const handleAnswer = async (quality) => {
     if (!currentCard) return;
-    const updates = calculateNextReview(currentCard.difficulty, currentCard.interval, currentCard.repetitions, quality);
-    updateCard(currentCard.id, updates);
+    await reviewCard(currentCard.id, quality);
   
     setSessionStats((prev) => ({
       ...prev,
@@ -112,6 +77,7 @@ export function StudySession({ onComplete }) {
     }));
   
     const updatedCards = cards.filter((_, idx) => idx !== currentCardIndex);
+    
     setCards(updatedCards);
   
     if (updatedCards.length > 0) {
@@ -122,6 +88,28 @@ export function StudySession({ onComplete }) {
   
     setShowAnswer(false);
   };
+
+  const predictTime = (quality) => {
+    let reviewIntervalDays;
+
+    if (quality < 3){
+      reviewIntervalDays = 1;
+  } else {
+      if (currentCard.repititions == 0){
+          reviewIntervalDays = 1;
+      } else if (currentCard.repititions == 1) {
+          reviewIntervalDays = 6;
+      } 
+      reviewIntervalDays = currentCard.easeFactor * reviewIntervalDays;
+  }
+
+  console.log("Predicted Interval (days):", reviewIntervalDays);
+  
+  if (reviewIntervalDays < 1) return `${((reviewIntervalDays/24)/60)} Minutes`
+  if (reviewIntervalDays === 1) return "1 day"
+  if (reviewIntervalDays <= 30) return `${(interval)} days`
+  return `${Math.round(reviewIntervalDays / 30)} months`
+  }
   
 
   return (
@@ -210,15 +198,15 @@ export function StudySession({ onComplete }) {
                   className="flex flex-col gap-1 h-auto py-3 bg-red-500 hover:bg-red-600"
                 >
                   <span className="font-semibold">Again</span>
-                  <span className="text-xs opacity-90">&lt; 1 day</span>
+                  <span className="text-xs opacity-90">&lt; {predictTime(1)}</span>
                 </Button>
                 <Button variant="secondary" onClick={() => handleAnswer(2)} className="flex flex-col gap-1 h-auto py-3 bg-yellow-300 hover:bg-yellow-400">
                   <span className="font-semibold">Hard</span>
-                  <span className="text-xs opacity-90">1-3 days</span>
+                  <span className="text-xs opacity-90">{predictTime(2)}</span>
                 </Button>
                 <Button variant="default" onClick={() => handleAnswer(3)} className="flex flex-col gap-1 h-auto py-3 bg-blue-500 hover:bg-blue-600">
                   <span className="font-semibold">Good</span>
-                  <span className="text-xs opacity-90">4-7 days</span>
+                  <span className="text-xs opacity-90">{predictTime(3)}</span>
                 </Button>
                 <Button
                   variant="default"
@@ -226,7 +214,7 @@ export function StudySession({ onComplete }) {
                   className="flex flex-col gap-1 h-auto py-3 bg-green-600 hover:bg-green-700"
                 >
                   <span className="font-semibold">Easy</span>
-                  <span className="text-xs opacity-90">1+ weeks</span>
+                  <span className="text-xs opacity-90">{predictTime(4)}</span>
                 </Button>
               </div>
             </div>

@@ -3,7 +3,7 @@
 import { createContext, useContext, useReducer, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard, createDeck, fetchDeck } from "../lib/api"
+import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard, createDeck, fetchDeck, reviewFlashcard as apiReviewFlashcard } from "../lib/api"
 
 const CardContext = createContext()
 
@@ -239,6 +239,32 @@ export function CardProvider({ children }) {
     }
   }
 
+  const reviewCard = async (id, rating) => {
+    const currentDeck = getCurrentDeck()
+    if (!currentDeck) return
+    try {
+      const updated = await apiReviewFlashcard(id, rating)
+      const updates = {
+        front: updated.frontText,
+        back: updated.backText,
+        difficulty: updated.easeFactor,
+        interval: updated.reviewIntervalDays,
+        repetitions: updated.repetitions,
+        nextReview: updated.nextReviewDate,
+        createdAt: updated.dateCreated,
+        lastReviewed: updated.lastReviewed,
+        version: updated.version,
+        deckId: updated.deckId?.toString(),
+      }
+      dispatch({
+        type: "UPDATE_CARD",
+        payload: { deckId: currentDeck.id, id: id.toString(), updates },
+      })
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const updateCard = async (id, updates) => {
     const currentDeck = getCurrentDeck()
   const existing = (currentDeck?.cards ?? []).find((c) => c.id === id)
@@ -360,14 +386,18 @@ export function CardProvider({ children }) {
     
     if (!currentDeck) return []
 
-    const now = new Date()
+    const now = new Date().toISOString()
+    
 
-    return currentDeck.cards.filter((card) => card.nextReview <= now.toISOString())
+    return (currentDeck.cards ?? [])
+    .filter((card) => card.nextReview <= now)
+    .slice(0, 20)
   }
 
   const value = {
     ...state,
     addCard,
+    reviewCard,
     updateCard,
     deleteCard,
     addDeck,
