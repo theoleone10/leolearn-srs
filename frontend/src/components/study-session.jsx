@@ -22,6 +22,51 @@ export function StudySession({ onComplete }) {
     easy: 0,
   })
 
+  // --- SRS helpers (match backend logic) ---
+const EASY_BONUS = 1.30;      // rating=4 multiplier
+const VERY_EASY_BONUS = 1.50; // rating=5 multiplier (kept for parity)
+const HARD_SAME_DAY = 0.50;   // rating=1 → 12 hours
+
+function base1(rate) {
+  switch (rate) {
+    case 1: return HARD_SAME_DAY; // ~12h
+    case 2: return 1.0;           // next day
+    case 3: return 1.0;           // good
+    case 4: return 3.0;           // easy
+    case 5: return 5.0;           // very easy
+    default: return 1.0;
+  }
+}
+
+function base2(rate) {
+  switch (rate) {
+    case 1: return HARD_SAME_DAY; // ~12h again
+    case 2: return 2.0;           // 2 days
+    case 3: return 6.0;           // good
+    case 4: return 8.0;           // easy
+    case 5: return 12.0;          // very easy
+    default: return 6.0;
+  }
+}
+
+function formatInterval(days) {
+  if (days < 1) {
+    const hours = Math.round(days * 24);
+    if (hours < 1) {
+      const minutes = Math.max(1, Math.round(days * 24 * 60));
+      return `${minutes} minute${minutes === 1 ? "" : "s"}`;
+    }
+    return `${hours} hour${hours === 1 ? "" : "s"}`;
+  }
+  if (days < 30) {
+    const whole = Math.round(days);
+    return `${whole} day${whole === 1 ? "" : "s"}`;
+  }
+  const months = Math.round(days / 30);
+  return `${months} month${months === 1 ? "" : "s"}`;
+}
+
+
   const currentDeck = getCurrentDeck()
 
   useEffect(() => {
@@ -89,27 +134,56 @@ export function StudySession({ onComplete }) {
     setShowAnswer(false);
   };
 
-  const predictTime = (quality) => {
-    let reviewIntervalDays;
+  // --- Updated predictTime ---
+const predictTime = (quality) => {
+  const ef = currentCard && currentCard.easeFactor ? currentCard.easeFactor : 2.5;
+  const reps = currentCard && (currentCard.repetitions || currentCard.repititions) || 0;
+  const lastIntervalDays = Math.max(0, currentCard && currentCard.reviewIntervalDays || 0);
 
-    if (quality < 3){
-      reviewIntervalDays = 1;
-  } else {
-      if (currentCard.repititions == 0){
-          reviewIntervalDays = 1;
-      } else if (currentCard.repititions == 1) {
-          reviewIntervalDays = 6;
-      } 
-      reviewIntervalDays = currentCard.easeFactor * reviewIntervalDays;
+  let intervalDays;
+
+  switch (quality) {
+    case 1: // Very hard / Again
+      intervalDays = base1(1); // ~12h
+      break;
+
+    case 2: // Hard
+      intervalDays = base1(2); // 1 day
+      break;
+
+    case 3: // Good
+      if (reps === 0) {
+        intervalDays = base1(3);
+      } else if (reps === 1) {
+        intervalDays = base2(3);
+      } else {
+        intervalDays = Math.max(1, ef * Math.max(1, lastIntervalDays));
+      }
+      break;
+
+    case 4: // Easy
+      if (reps === 0) {
+        intervalDays = base1(4);
+      } else if (reps === 1) {
+        intervalDays = base2(4);
+      } else {
+        intervalDays = Math.max(1, ef * EASY_BONUS * Math.max(1, lastIntervalDays));
+      }
+      break;
+
+    default: // treat anything else as "good"
+      if (reps === 0) {
+        intervalDays = base1(3);
+      } else if (reps === 1) {
+        intervalDays = base2(3);
+      } else {
+        intervalDays = Math.max(1, ef * Math.max(1, lastIntervalDays));
+      }
+      break;
   }
 
-  console.log("Predicted Interval (days):", reviewIntervalDays);
-  
-  if (reviewIntervalDays < 1) return `${((reviewIntervalDays/24)/60)} Minutes`
-  if (reviewIntervalDays === 1) return "1 day"
-  if (reviewIntervalDays <= 30) return `${(interval)} days`
-  return `${Math.round(reviewIntervalDays / 30)} months`
-  }
+  return formatInterval(intervalDays);
+};
   
 
   return (
@@ -198,7 +272,7 @@ export function StudySession({ onComplete }) {
                   className="flex flex-col gap-1 h-auto py-3 bg-red-500 hover:bg-red-600"
                 >
                   <span className="font-semibold">Again</span>
-                  <span className="text-xs opacity-90">&lt; {predictTime(1)}</span>
+                  <span className="text-xs opacity-90">{predictTime(1)}</span>
                 </Button>
                 <Button variant="secondary" onClick={() => handleAnswer(2)} className="flex flex-col gap-1 h-auto py-3 bg-yellow-300 hover:bg-yellow-400">
                   <span className="font-semibold">Hard</span>
