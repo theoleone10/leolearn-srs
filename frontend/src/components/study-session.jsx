@@ -233,9 +233,17 @@ const predictTime = (quality) => {
       : `flex items-center justify-center`)
   }
 >
-  <p className="w-full text-lg text-center whitespace-pre-wrap">
+  
+<div className="w-full text-lg text-center whitespace-pre-wrap">
     {currentCard.front}
-  </p>
+    {currentCard.frontImage && (
+      <img
+        src={currentCard.frontImage}
+        alt="front"
+        className="mx-auto mt-4 max-h-48 object-contain"
+      />
+    )}
+  </div>
 
   {showAnswer && (
     <>
@@ -243,9 +251,16 @@ const predictTime = (quality) => {
       <div className="w-2/3 sm:w-1/2 h-px bg-black my-4" />
       {/* or: <div className="w-[60%] h-px bg-border my-4" /> */}
 
-      <p className="w-full text-lg text-center whitespace-pre-wrap">
+      <div className="w-full text-lg text-center whitespace-pre-wrap">
         {currentCard.back}
-      </p>
+        {currentCard.backImage && (
+          <img
+            src={currentCard.backImage}
+            alt="back"
+            className="mx-auto mt-4 max-h-48 object-contain"
+          />
+        )}
+      </div>
     </>
   )}
 </div>

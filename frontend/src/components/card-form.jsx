@@ -8,9 +8,11 @@ import { toast } from "react-toastify";
 import { useCards } from "../context/CardContext"
 
 export function CardForm({ editingCard, onCancel }) {
-  const { addCard, updateCard, navigate } = useCards()
+  const { addCard, updateCard } = useCards()
   const [front, setFront] = useState(editingCard?.front || "")
   const [back, setBack] = useState(editingCard?.back || "")
+  const [frontImage, setFrontImage] = useState(null)
+  const [backImage, setBackImage] = useState(null)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -19,7 +21,7 @@ export function CardForm({ editingCard, onCancel }) {
     if (editingCard) {
       updateCard(editingCard.id, { front: front.trim(), back: back.trim() })
     } else {
-      addCard(front.trim(), back.trim())
+      addCard(front.trim(), back.trim(), frontImage, backImage)
 
       toast.success("Card added successfully!")
       
@@ -27,6 +29,8 @@ export function CardForm({ editingCard, onCancel }) {
 
     setFront("")
     setBack("")
+    setFrontImage(null)
+    setBackImage(null)
     onCancel?.()
   }
 
@@ -49,6 +53,12 @@ export function CardForm({ editingCard, onCancel }) {
               className="min-h-[100px]"
               required
             />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFrontImage(e.target.files[0])}
+              className="mt-2"
+            />
           </div>
 
           <div>
@@ -62,6 +72,12 @@ export function CardForm({ editingCard, onCancel }) {
               placeholder="Enter the answer or explanation..."
               className="min-h-[100px]"
               required
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setBackImage(e.target.files[0])}
+              className="mt-2"
             />
           </div>
 

@@ -6,7 +6,11 @@ export const api = axios.create({
 
 export const fetchFlashcards = () => api.get("/flashcards").then((res) => res.data);
 export const createFlashcard = (flashcard) =>
-  api.post("/flashcards", flashcard).then((res) => res.data);
+  api
+    .post("/flashcards", flashcard, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+    .then((res) => res.data);
 export const updateFlashcard = (id, flashcard) =>
   api.put(`/flashcards/${id}`, flashcard).then((res) => res.data);
 export const deleteFlashcard = (id) => api.delete(`/flashcards/${id}`);

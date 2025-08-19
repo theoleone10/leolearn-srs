@@ -165,6 +165,8 @@ export function CardProvider({ children }) {
           id: f.id?.toString(),
           front: f.frontText,
           back: f.backText,
+          frontImage: f.frontImageUrl,
+          backImage: f.backImageUrl,
           difficulty: f.easeFactor,
           interval: f.reviewIntervalDays,
           repetitions: f.repetitions,
@@ -197,41 +199,33 @@ export function CardProvider({ children }) {
       .catch((err) => console.error(err))
   }, [])
 
-  const addCard = async (front, back) => {
-    
-
-
-    const now = new Date()
-    const payload = {
-      frontText: front,
-      backText: back,
-      dateCreated: now.toISOString(),
-      reviewIntervalDays: 1,
-      easeFactor: 2.5,
-      repetitions: 0,
-      nextReviewDate: now.toISOString(),
-      deckId: parseInt(state.currentDeck),
-    }
+  const addCard = async (front, back, frontImage, backImage) => {
+    const formData = new FormData()
+    formData.append("frontText", front)
+    formData.append("backText", back)
+    formData.append("deckId", state.currentDeck)
+    if (frontImage) formData.append("frontImage", frontImage)
+    if (backImage) formData.append("backImage", backImage)
     
     try {
-      const saved = await createFlashcard(payload)
+      const saved = await createFlashcard(formData)
       
       const card = {
         id: saved.id?.toString(),
         front: saved.frontText,
         back: saved.backText,
+        frontImage: saved.frontImageUrl,
+        backImage: saved.backImageUrl,
         difficulty: saved.easeFactor,
         interval: saved.reviewIntervalDays,
         repetitions: saved.repetitions,
         nextReview: saved.nextReviewDate,
         createdAt: saved.dateCreated,
-        lastReviewed: null,
+        lastReviewed: saved.lastReviewed,
         version: saved.version,
         deckId: state.currentDeck,
       }
       dispatch({ type: "ADD_CARD", payload: card })
-
-      console.log(state);
       
       
     } catch (e) {
@@ -247,6 +241,8 @@ export function CardProvider({ children }) {
       const updates = {
         front: updated.frontText,
         back: updated.backText,
+        frontImage: updated.frontImageUrl,
+        backImage: updated.backImageUrl,
         difficulty: updated.easeFactor,
         interval: updated.reviewIntervalDays,
         repetitions: updated.repetitions,
@@ -274,6 +270,8 @@ export function CardProvider({ children }) {
       id: parseInt(updated.id),
       frontText: updated.front,
       backText: updated.back,
+      frontImageUrl: updated.frontImage,
+      backImageUrl: updated.backImage,
       dateCreated: updated.createdAt,
       lastReviewed: updated.lastReviewed || updated.createdAt,
       reviewIntervalDays: updated.interval,
@@ -391,7 +389,6 @@ export function CardProvider({ children }) {
 
     return (currentDeck.cards ?? [])
     .filter((card) => card.nextReview <= now)
-    .slice(0, 20)
   }
 
   const value = {

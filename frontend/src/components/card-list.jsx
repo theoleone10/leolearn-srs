@@ -8,7 +8,7 @@ import { Badge } from "./ui/badge"
 import { Trash2, Edit, Eye, EyeOff } from "lucide-react"
 import { useCards } from "../context/CardContext"
 
-export function CardList({ onEditCard }) {
+export function CardList() {
   const { getCurrentDeck, deleteCard, updateCard } = useCards()
   const [flippedCards, setFlippedCards] = useState(new Set())
   const currentDeck = getCurrentDeck()
@@ -48,11 +48,6 @@ export function CardList({ onEditCard }) {
     setFlippedCards(newFlipped)
   }
 
-  const getDifficultyColor = (difficulty) => {
-    if (difficulty < 2.0) return "destructive"
-    if (difficulty < 2.5) return "secondary"
-    return "default"
-  }
 
   const getIntervalText = (interval) => {
     if (interval < 1) return "Soon"
@@ -82,6 +77,14 @@ export function CardList({ onEditCard }) {
                 <CardHeader className="">
                   <div className="flex items-center justify-between">
                     <p className="whitespace-pre-wrap">{isFlipped ? card.back : card.front}</p>
+
+                    {(isFlipped ? card.backImage : card.frontImage) && (
+                      <img
+                        src={isFlipped ? card.backImage : card.frontImage}
+                        alt="card visual"
+                        className="mt-2 max-h-48 object-contain"
+                      />
+                    )}
                     <div className="flex gap-1">
                       <div className={`flex items-center gap-2`}>
 

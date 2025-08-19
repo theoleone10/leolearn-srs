@@ -4,15 +4,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.leolearn.srs.CloudinaryService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 
 import jakarta.validation.Valid;
 
@@ -31,6 +37,7 @@ record ReviewRequest(
 public class FlashcardController {
 
     private final FlashcardRepository flashcardRepository;
+    private final CloudinaryService cloudinaryService;
 
     // ---- SRS tuning knobs (distinct effects per rating) ----
     private static final float MIN_EASE = 1.3f;
@@ -47,8 +54,9 @@ public class FlashcardController {
     private static final float EASY_EASE_BOOST = 0.05f;     // rating=4
     private static final float VERY_EASY_EASE_BOOST = 0.15f;// rating=5
 
-    public FlashcardController(FlashcardRepository flashcardRepository) {
+    public FlashcardController(FlashcardRepository flashcardRepository, CloudinaryService cloudinaryService) {
         this.flashcardRepository = flashcardRepository;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @GetMapping("")
@@ -66,8 +74,32 @@ public class FlashcardController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("")
-    Flashcard create(@Valid @RequestBody Flashcard flashcard) {
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Flashcard create(
+        @RequestParam("frontText") String frontText,
+        @RequestParam("backText") String backText,
+        @RequestParam("deckId") Integer deckId,
+        @RequestPart(value = "frontImage", required = false) MultipartFile frontImage,
+        @RequestPart(value = "backImage", required = false) MultipartFile backImage
+    ) {
+        String frontUrl = cloudinaryService.uploadImage(frontImage);
+        String backUrl = cloudinaryService.uploadImage(backImage);
+        LocalDateTime now = LocalDateTime.now();
+        Flashcard flashcard = new Flashcard(
+            null,
+            frontText,
+            backText,
+            frontUrl,
+            backUrl,
+            now,
+            null,
+            1.0f,
+            2.5f,
+            0,
+            now,
+            deckId,
+            null
+        );
         return flashcardRepository.save(flashcard);
     }
 
@@ -156,6 +188,8 @@ public class FlashcardController {
             flashcard.id(),
             flashcard.frontText(),
             flashcard.backText(),
+            flashcard.frontImageUrl(),
+            flashcard.backImageUrl(),
             flashcard.dateCreated(),
             lastReviewed,
             reviewIntervalDays,
