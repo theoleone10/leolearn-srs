@@ -76,8 +76,8 @@ public class FlashcardController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Flashcard create(
-        @RequestParam("frontText") String frontText,
-        @RequestParam("backText") String backText,
+        @RequestParam(value = "frontText", required = false) String frontText,
+        @RequestParam(value = "backText", required = false) String backText,
         @RequestParam("deckId") Integer deckId,
         @RequestPart(value = "frontImage", required = false) MultipartFile frontImage,
         @RequestPart(value = "backImage", required = false) MultipartFile backImage

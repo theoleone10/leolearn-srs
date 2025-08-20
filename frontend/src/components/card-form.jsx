@@ -16,12 +16,12 @@ export function CardForm({ editingCard, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!front.trim() || !back.trim()) return
+    // if (!front.trim() || !back.trim()) return
 
     if (editingCard) {
       updateCard(editingCard.id, { front: front.trim(), back: back.trim() })
     } else {
-      addCard(front.trim(), back.trim(), frontImage, backImage)
+      addCard(front?.trim(), back?.trim(), frontImage, backImage)
 
       toast.success("Card added successfully!")
       
@@ -51,7 +51,7 @@ export function CardForm({ editingCard, onCancel }) {
               onChange={(e) => setFront(e.target.value)}
               placeholder="Enter the question or prompt..."
               className="min-h-[100px]"
-              required
+              
             />
             <input
               type="file"
@@ -71,7 +71,7 @@ export function CardForm({ editingCard, onCancel }) {
               onChange={(e) => setBack(e.target.value)}
               placeholder="Enter the answer or explanation..."
               className="min-h-[100px]"
-              required
+            
             />
             <input
               type="file"

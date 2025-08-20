@@ -201,8 +201,8 @@ export function CardProvider({ children }) {
 
   const addCard = async (front, back, frontImage, backImage) => {
     const formData = new FormData()
-    formData.append("frontText", front)
-    formData.append("backText", back)
+    if (front) formData.append("frontText", front)
+    if (back) formData.append("backText", back)
     formData.append("deckId", state.currentDeck)
     if (frontImage) formData.append("frontImage", frontImage)
     if (backImage) formData.append("backImage", backImage)
