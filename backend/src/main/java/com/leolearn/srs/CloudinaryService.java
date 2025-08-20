@@ -2,6 +2,7 @@ package com.leolearn.srs;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +17,15 @@ public class CloudinaryService {
 
     public CloudinaryService() {
         String url = System.getenv("CLOUDINARY_URL");
-        this.cloudinary = url != null ? new Cloudinary(url) : new Cloudinary();
+        if (url != null && !url.isBlank()) {
+            this.cloudinary = new Cloudinary(url);
+        } else {
+            Map<String, String> config = new HashMap<>();
+            config.put("cloud_name", System.getenv("CLOUDINARY_CLOUD_NAME"));
+            config.put("api_key", System.getenv("CLOUDINARY_API_KEY"));
+            config.put("api_secret", System.getenv("CLOUDINARY_API_SECRET"));
+            this.cloudinary = new Cloudinary(config);
+        }
     }
 
     public String uploadImage(MultipartFile file) {
