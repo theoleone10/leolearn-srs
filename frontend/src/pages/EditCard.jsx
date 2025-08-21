@@ -26,13 +26,14 @@ export function EditCardPage() {
     if (!newDeckName.trim()) return
 
     console.log(newDeckName.trim(), newDeckDescription.trim(), newDeckCardsPerDay);
+    console.log(currentDeck.id, currentDeck.dateCreated);
+    
     
 
-    updateDeck(currentDeck.id,  { name:newDeckName.trim(), description: newDeckDescription.trim(), cardsPerDay: newDeckCardsPerDay })
+    updateDeck(currentDeck.id,  { name:newDeckName.trim(), description: newDeckDescription.trim(), cardsPerDay: newDeckCardsPerDay, dateCreated: currentDeck.dateCreated })
     // setNewDeckName(""),
-    // setNewDeckDescription(""),
+    // setNewDeckDescription("")
     // setNewDeckCardsPerDay(20)
-    // setIsDialogOpen(false)
   }
 
   return (

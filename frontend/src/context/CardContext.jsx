@@ -3,7 +3,7 @@
 import { createContext, useContext, useReducer, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard, createDeck, fetchDeck, reviewFlashcard as apiReviewFlashcard } from "../lib/api"
+import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard, fetchDeck, reviewFlashcard as apiReviewFlashcard } from "../lib/api"
 
 const CardContext = createContext()
 
@@ -331,35 +331,38 @@ export function CardProvider({ children }) {
   };
 
   const updateDeck = async (id, updates) => {
-    
+    const existing = state.decks.find((d) => d.id === id.toString())
+    if (!existing) return
     try {
+      const payload = {
+        id,
+        name: updates.name ?? existing.name,
+        description: updates.description ?? existing.description,
+        dateCreated: existing.createdAt,
+        cardsPerDay: updates.cardsPerDay ?? existing.cardsPerDay,
+      }
       const { data } = await axios.put(
         `http://localhost:8080/api/decks/${id}`,
-        {        
-          id,         
-          ...updates,              
+        payload)
+
+        const deck = {
+          name: data.name,
+          description: data.description,
+          createdAt: data.dateCreated,
+          cardsPerDay: data.cardsPerDay,
         }
-        // ,
-        // { headers: { "Content-Type": "application/json" } }
-      );
   
-      // const deck = {
-      //   id: id,  
-      //   name: data.name,
-      //   description: data.description,
-      //   createdAt: data.dateCreated,
-      //   cardsPerDay: data.cardsPerDay,
-      // };
-  
-      dispatch({ type: "UPDATE_DECK", payload: { id, updates:data } });
+        dispatch({ type: "UPDATE_DECK", payload: { id, updates: deck } })
+
+
     } catch (e) {
-      console.error("update deck failed", e?.response?.status, e?.response?.data || e);
+      console.error("update deck failed", e?.response?.status, e?.response?.data || e)
     }
   }
 
   const deleteDeck = async (id) => {
     try {
-      const { data } = await axios.delete(
+      await axios.delete(
         "http://localhost:8080/api/decks/" + id
       );
   
@@ -372,7 +375,7 @@ export function CardProvider({ children }) {
 
   const setCurrentDeck = async (deckId) => {
     try {
-      const { data } = await axios.get(
+      await axios.get(
         "http://localhost:8080/api/decks/" + deckId,
         { headers: { "Content-Type": "application/json" } }
       );

@@ -39,8 +39,8 @@ public class JdbcClientDeckRepository {
     }
 
     public void update(Deck deck, Integer id) {
-        var updated = jdbcClient.sql("update deck set name = ?, description = ?, cards_per_day = ? where id = ?")
-        .params(List.of(deck.name(), deck.description(), deck.cardsPerDay(), id))
+        var updated = jdbcClient.sql("update deck set name = ?, description = ?, date_created = ?, cards_per_day = ? where id = ?")
+        .params(List.of(deck.name(), deck.description(), deck.dateCreated(), deck.cardsPerDay(), id))
             .update();
         
         Assert.state(updated == 1, "Failed to update deck" + deck.name());

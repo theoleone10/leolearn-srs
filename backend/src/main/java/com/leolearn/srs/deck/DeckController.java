@@ -51,10 +51,20 @@ public class DeckController {
     }
 
     // put
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     Deck update(@Valid @RequestBody Deck deck, @PathVariable Integer id) {
-        return deckRepository.save(deck);
+        Deck existing = deckRepository.findById(id)
+            .orElseThrow(DeckNotFoundException::new);
+
+        Deck updatedDeck = new Deck(
+            id,
+            deck.name(),
+            deck.description(),
+            existing.dateCreated(),
+            deck.cardsPerDay()
+        );
+
+        return deckRepository.save(updatedDeck);
     }
 
     // delete
