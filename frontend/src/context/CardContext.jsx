@@ -331,24 +331,27 @@ export function CardProvider({ children }) {
   };
 
   const updateDeck = async (id, updates) => {
+    
     try {
       const { data } = await axios.put(
-        "http://localhost:8080/api/decks/" + id,
-        {                 
-          updates,              
-        },
-        { headers: { "Content-Type": "application/json" } }
+        `http://localhost:8080/api/decks/${id}`,
+        {        
+          id,         
+          ...updates,              
+        }
+        // ,
+        // { headers: { "Content-Type": "application/json" } }
       );
   
-      const deck = {
-        id: id,   // axios puts payload under .data
-        name: data.name,
-        description: data.description,
-        createdAt: data.dateCreated,
-        cardsPerDay: data.cardsPerDay,
-      };
+      // const deck = {
+      //   id: id,  
+      //   name: data.name,
+      //   description: data.description,
+      //   createdAt: data.dateCreated,
+      //   cardsPerDay: data.cardsPerDay,
+      // };
   
-      dispatch({ type: "UPDATE_DECK", payload: { id, updates } });
+      dispatch({ type: "UPDATE_DECK", payload: { id, updates:data } });
     } catch (e) {
       console.error("update deck failed", e?.response?.status, e?.response?.data || e);
     }

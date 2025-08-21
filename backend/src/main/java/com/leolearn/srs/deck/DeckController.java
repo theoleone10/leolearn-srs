@@ -53,8 +53,8 @@ public class DeckController {
     // put
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    void update(@Valid @RequestBody Deck deck, @PathVariable Integer id) {
-        deckRepository.save(deck);
+    Deck update(@Valid @RequestBody Deck deck, @PathVariable Integer id) {
+        return deckRepository.save(deck);
     }
 
     // delete

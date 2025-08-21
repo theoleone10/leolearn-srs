@@ -122,7 +122,7 @@ export function CardList() {
                       
                     </div>
                   <div className="flex gap-1">
-                  {!isOverdue ? <Badge variant="outline">{getIntervalText((nextReview - new Date()) / (1000 * 60 * 60 * 24))}</Badge>
+                  {!isOverdue ? <Badge variant="outline" className=' bg-blue-300'>{getIntervalText(Math.round((nextReview - new Date()) / (1000 * 60 * 60 * 24)))}</Badge>
   : <Badge variant="destructive">Due for review</Badge>}
                       <Button variant="ghost" size="sm" onClick={() => {
                         setEditingCard(null)

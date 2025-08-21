@@ -129,6 +129,9 @@ export function DeckSelector() {
                       <BookOpen className="h-5 w-5"   />
                       {deck.name}
                     </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {deck.description}
+                    </p>
                   </div>
                   <Button 
                     variant="edit"

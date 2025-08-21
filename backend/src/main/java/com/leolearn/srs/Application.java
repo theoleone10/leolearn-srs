@@ -28,7 +28,7 @@ import com.leolearn.srs.user.UserRestClient;
 @SpringBootApplication
 public class Application {
 
-	private static final Logger log = LoggerFactory.getLogger(Application.class);
+	// private static final Logger log = LoggerFactory.getLogger(Application.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -36,22 +36,22 @@ public class Application {
         
 	}
 
-	@Bean
-	UserHttpClient userHttpClient() {
-		RestClient restClient = RestClient.create("https://jsonplaceholder.typicode.com");
-		HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(RestClientAdapter.create(restClient)).build();
-		return factory.createClient(UserHttpClient.class);
-	}
+	// @Bean
+	// UserHttpClient userHttpClient() {
+	// 	RestClient restClient = RestClient.create("https://jsonplaceholder.typicode.com");
+	// 	HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(RestClientAdapter.create(restClient)).build();
+	// 	return factory.createClient(UserHttpClient.class);
+	// }
 
-	@Bean
-	CommandLineRunner runner(UserHttpClient client) {
-		return args -> {
-			// List<User> users = client.findAll();
-			// System.out.println(users);
+	// @Bean
+	// CommandLineRunner runner(UserHttpClient client) {
+	// 	return args -> {
+	// 		// List<User> users = client.findAll();
+	// 		// System.out.println(users);
 
-			User user = client.findById(1);
-			System.out.println(user);
-		};
-	}
+	// 		User user = client.findById(1);
+	// 		System.out.println(user);
+	// 	};
+	// }
 
 }

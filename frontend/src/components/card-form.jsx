@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { toast } from "react-toastify";
 import { useCards } from "../context/CardContext"
 import { assets } from '../assets/assets'
+import { Input } from "./ui/input"
 
 export function CardForm({ editingCard, onCancel }) {
   const { addCard, updateCard } = useCards()
