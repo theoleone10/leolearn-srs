@@ -12,14 +12,18 @@ import { useCards } from "../context/CardContext"
 export function DeckSelector() {
   const { decks, currentDeck, addDeck, deleteDeck, setCurrentDeck, navigate } = useCards()
   const [newDeckName, setNewDeckName] = useState("")
+  const [newDeckDescription, setNewDeckDescription] = useState("")
+  const [newDeckCardsPerDay, setNewDeckCardsPerDay] = useState(20)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const handleCreateDeck = (e) => {
     e.preventDefault()
     if (!newDeckName.trim()) return
 
-    addDeck(newDeckName.trim())
-    setNewDeckName("")
+    addDeck(newDeckName.trim(), newDeckDescription.trim(), newDeckCardsPerDay)
+    setNewDeckName(""),
+    setNewDeckDescription(""),
+    setNewDeckCardsPerDay(20)
     setIsDialogOpen(false)
   }
 
@@ -60,17 +64,42 @@ export function DeckSelector() {
               <DialogTitle>Create New Deck</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreateDeck} className="space-y-4">
+              <label htmlFor="deckName" className="block text-sm font-medium mb-2">
+                Deck Name:
+              </label>
               <Input
                 value={newDeckName}
+                id="deckName"
                 onChange={(e) => setNewDeckName(e.target.value)}
                 placeholder="Enter deck name..."
+                autoFocus
+                required
+              />
+              <label htmlFor="deckDescription" className="block text-sm font-medium mb-2">
+                Deck Description:
+              </label>
+              <Input
+                value={newDeckDescription}
+                id="deckDescription"
+                onChange={(e) => setNewDeckDescription(e.target.value)}
+                placeholder="Enter deck description..."
+                autoFocus
+              />
+              <label htmlFor="deckCardsPerDay" className="block text-sm font-medium mb-2">
+                Cards Per Day:
+              </label>
+              <Input
+                value={newDeckCardsPerDay}
+                id="deckCardsPerDay"
+                onChange={(e) => setNewDeckCardsPerDay(e.target.value)}
+                placeholder="Enter deck description..."
                 autoFocus
               />
               <div className="flex gap-2 justify-end">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit">Create Deck</Button>
+                <Button type="submit" className='bg-blue-500 text-white shadow-[0_0_10px_bg-blue-600] hover:bg-blue-400 hover:text-white hover:shadow-[0_0_10px_bg-blue-600]'>Create Deck</Button>
               </div>
             </form>
           </DialogContent>

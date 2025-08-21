@@ -97,7 +97,6 @@ function cardReducer(state, action) {
     }
 
     case "UPDATE_DECK":
-      // 🔧 Fix: this should update deck fields, not iterate its cards
       return {
         ...state,
         decks: state.decks.map((deck) =>
@@ -302,7 +301,7 @@ export function CardProvider({ children }) {
     }
   }
 
-  const addDeck = async (name) => {
+  const addDeck = async (name, description, cardsPerDay) => {
     try {
       const dateCreated = new Date().toISOString().replace('Z', ''); // ISO local datetime
   
@@ -310,8 +309,9 @@ export function CardProvider({ children }) {
         "http://localhost:8080/api/decks",
         {
           name,                     // use the param you passed in
-          description: "",
-          dateCreated,              // no Z
+          description,
+          dateCreated,
+          cardsPerDay
         },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -321,6 +321,7 @@ export function CardProvider({ children }) {
         name: data.name,
         description: data.description,
         createdAt: data.dateCreated,
+        cardsPerDay: data.cardsPerDay,
       };
   
       dispatch({ type: "ADD_DECK", payload: deck });
@@ -344,6 +345,7 @@ export function CardProvider({ children }) {
         name: data.name,
         description: data.description,
         createdAt: data.dateCreated,
+        cardsPerDay: data.cardsPerDay,
       };
   
       dispatch({ type: "UPDATE_DECK", payload: { id, updates } });

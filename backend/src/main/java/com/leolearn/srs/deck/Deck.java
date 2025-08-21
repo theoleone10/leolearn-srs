@@ -12,6 +12,7 @@ public record Deck(
     @NotEmpty
     String name,
     String description,
-    LocalDateTime dateCreated
+    LocalDateTime dateCreated,
+    Integer cardsPerDay
 ) {
 } 

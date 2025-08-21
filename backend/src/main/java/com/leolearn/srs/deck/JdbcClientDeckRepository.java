@@ -31,16 +31,16 @@ public class JdbcClientDeckRepository {
     }
 
     public void create(Deck deck) {
-        var updated = jdbcClient.sql("insert into deck (id,name, description, date_created) values (coalesce(max(id),0) + 1, ?, ?, ?) from deck")
-            .params(List.of(deck.id(),deck.name(), deck.description(), deck.dateCreated()))
+        var updated = jdbcClient.sql("insert into deck (id,name, description, date_created, cards_per_day) values (coalesce(max(id),0) + 1, ?, ?, ?, ?) from deck")
+            .params(List.of(deck.id(),deck.name(), deck.description(), deck.dateCreated(), deck.cardsPerDay()))
             .update();
         
         Assert.state(updated == 1, "Failed to create deck" + deck.name());
     }
 
     public void update(Deck deck, Integer id) {
-        var updated = jdbcClient.sql("update deck set name = ?, description = ?, dateCreated = ? where id = ?")
-        .params(List.of(deck.id(),deck.name(), deck.description(), deck.dateCreated()))
+        var updated = jdbcClient.sql("update deck set name = ?, description = ?, dateCreated = ?, cards_per_day = ? where id = ?")
+        .params(List.of(deck.id(),deck.name(), deck.description(), deck.dateCreated(), deck.cardsPerDay()))
             .update();
         
         Assert.state(updated == 1, "Failed to update deck" + deck.name());
