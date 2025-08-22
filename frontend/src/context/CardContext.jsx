@@ -3,6 +3,7 @@
 import { createContext, useContext, useReducer, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { fetchFlashcards, createFlashcard, updateFlashcard as apiUpdateFlashcard, deleteFlashcard as apiDeleteFlashcard, fetchDeck, reviewFlashcard as apiReviewFlashcard } from "../lib/api"
 
 const CardContext = createContext()
@@ -225,6 +226,9 @@ export function CardProvider({ children }) {
         deckId: state.currentDeck,
       }
       dispatch({ type: "ADD_CARD", payload: card })
+
+
+      toast.success("Card added successfully!")
       
       
     } catch (e) {
@@ -354,6 +358,8 @@ export function CardProvider({ children }) {
   
         dispatch({ type: "UPDATE_DECK", payload: { id, updates: deck } })
 
+        toast.success("Deck Updated successfully!")
+
 
     } catch (e) {
       console.error("update deck failed", e?.response?.status, e?.response?.data || e)
@@ -366,7 +372,7 @@ export function CardProvider({ children }) {
         "http://localhost:8080/api/decks/" + id
       );
   
-      dispatch({ type: "DELETE_DECK", payload: { id } });
+      dispatch({ type: "DELETE_DECK", payload: { id } });dock
     } catch (e) {
       console.error("delete deck failed", e?.response?.status, e?.response?.data || e);
     }

@@ -24,7 +24,6 @@ export function CardForm({ editingCard, onCancel }) {
     } else {
       addCard(front?.trim(), back?.trim(), frontImage, backImage)
 
-      toast.success("Card added successfully!")
       
     }
 

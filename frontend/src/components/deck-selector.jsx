@@ -136,7 +136,9 @@ export function DeckSelector() {
                   <Button 
                     variant="edit"
                     size="sm"
-                    onClick={() => navigate('/add-card?edit=false')}
+                    onClick={() => navigate('/add-card')
+                    
+                    }
                     className="text-gray-500 hover:text-gray-700"
                   >
                     <Plus className="h-4 w-4"/>
@@ -144,7 +146,12 @@ export function DeckSelector() {
                   <Button
                     variant="edit"
                     size="sm"
-                    onClick={() => navigate('/edit-deck')}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setCurrentDeck(deck.id)
+                      navigate('/edit-deck')
+                    }}
+                    
                     className="text-gray-500 hover:text-gray-700"
                   >
                     <Edit className="h-4 w-4" />
