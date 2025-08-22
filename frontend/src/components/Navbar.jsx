@@ -2,10 +2,12 @@ import React, {useContext, useState, useEffect} from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { BookOpen, Brain, BarChart3 } from "lucide-react"
 import { assets } from '../assets/assets'
+import { useCards } from '../context/CardContext'
 // import { cn } from "../../lib/utils"
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
+    const { navigate } = useCards()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,7 +33,7 @@ const Navbar = () => {
         
         <ul className='grid w-full grid-cols-7 mb-4 items-center text-center justify-items-center'>
         <div className="col-start-1 justify-self-start">
-            <img src={assets.logo} alt="LeoLearn Logo" className="w-35" />
+            <img src={assets.logo} alt="LeoLearn Logo" className="w-35" onClick={()=>navigate('/')} />
         </div>
 
         <li className="col-start-4">
