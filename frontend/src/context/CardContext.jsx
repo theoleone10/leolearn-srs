@@ -173,6 +173,9 @@ export function CardProvider({ children }) {
           nextReview: f.nextReviewDate,
           createdAt: f.dateCreated,
           lastReviewed: f.lastReviewed,
+          introducedOn: f.introducedOn,
+          firstSeenAt: f.firstSeenAt,
+          suspended: f.suspended,
           version: f.version,
           deckId: f.deckId?.toString(),
         }))
@@ -192,6 +195,7 @@ export function CardProvider({ children }) {
           name: f.name,
           description: f.description,
           createdAt: f.dateCreated,
+          cardsPerDay: f.cardsPerDay
         }))
         dispatch({ type: "SET_DECKS", payload: { decks } })
 
@@ -222,6 +226,9 @@ export function CardProvider({ children }) {
         nextReview: saved.nextReviewDate,
         createdAt: saved.dateCreated,
         lastReviewed: saved.lastReviewed,
+        introducedOn: saved.introducedOn,
+        firstSeenAt: saved.firstSeenAt,
+        suspended: saved.suspended,
         version: saved.version,
         deckId: state.currentDeck,
       }
@@ -252,6 +259,9 @@ export function CardProvider({ children }) {
         nextReview: updated.nextReviewDate,
         createdAt: updated.dateCreated,
         lastReviewed: updated.lastReviewed,
+        introducedOn: updated.introducedOn,
+        firstSeenAt: updated.firstSeenAt,
+        suspended: updated.suspended,
         version: updated.version,
         deckId: updated.deckId?.toString(),
       }
@@ -282,6 +292,9 @@ export function CardProvider({ children }) {
       repetitions: updated.repetitions,
       nextReviewDate: updated.nextReview,
       deckId: parseInt(currentDeck.id),
+      firstSeenAt: updated.firstSeenAt,
+      introducedOn: updated.introducedOn,
+      suspended: updated.suspended,
       version: updated.version,
     }
     try {
@@ -395,14 +408,40 @@ export function CardProvider({ children }) {
 
   const getCardsForReview = () => {
     const currentDeck = getCurrentDeck()
+
     
     if (!currentDeck) return []
 
     const now = new Date().toISOString()
+
+    const today = new Date().toISOString().split("T")[0]
+
+    const cards = currentDeck.cards ?? []
+
     
 
-    return (currentDeck.cards ?? [])
-    .filter((card) => card.nextReview <= now)
+    const due = cards.filter(
+      (card) => card.nextReview <= now && card.introducedOn && !card.suspended
+    )
+
+
+    
+
+    const introducedToday = cards.filter(
+      (card) => card.introducedOn === today
+    ).length
+
+    const newLeft = Math.max((currentDeck.cardsPerDay || 0) - introducedToday, 0)
+    
+
+    const newCards = cards
+      .filter((card) => !card.introducedOn && !card.suspended)
+      .slice(0, newLeft)
+
+      
+    
+
+      return [...due, ...newCards]
   }
 
   const value = {

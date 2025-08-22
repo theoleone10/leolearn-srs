@@ -98,6 +98,9 @@ public class FlashcardController {
             0,
             now,
             deckId,
+            null,
+            null,
+            false,
             null
         );
         return flashcardRepository.save(flashcard);
@@ -184,6 +187,13 @@ public class FlashcardController {
         LocalDateTime lastReviewed = LocalDateTime.now();
         long minutes = Math.max(1L, Math.round(reviewIntervalDays * 24f * 60f));
 
+        LocalDateTime firstSeenAt = flashcard.firstSeenAt();
+        java.time.LocalDate introducedOn = flashcard.introducedOn();
+        if (firstSeenAt == null) {
+            firstSeenAt = lastReviewed;
+            introducedOn = java.time.LocalDate.now();
+        }
+
         Flashcard updated = new Flashcard(
             flashcard.id(),
             flashcard.frontText(),
@@ -197,6 +207,9 @@ public class FlashcardController {
             reps,
             lastReviewed.plusMinutes(minutes),
             flashcard.deckId(),
+            firstSeenAt,
+            introducedOn,
+            flashcard.suspended(),
             flashcard.version()
         );
 

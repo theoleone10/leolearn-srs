@@ -11,6 +11,9 @@ CREATE TABLE IF NOT EXISTS Flashcard (
     repetitions INT NOT NULL,   
     nextReviewDate timestamp NOT NULL,
     deckId INT, 
+    firstSeenAt timestamp,
+    introducedOn date,
+    suspended BOOLEAN DEFAULT FALSE,
     version INT,
     PRIMARY KEY (id)
 );

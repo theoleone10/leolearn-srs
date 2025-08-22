@@ -1,5 +1,6 @@
 package com.leolearn.srs.flashcard;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
@@ -20,6 +21,9 @@ public record Flashcard(
     Integer repetitions,       
     LocalDateTime nextReviewDate,
     Integer deckId,
+    LocalDateTime firstSeenAt,
+    LocalDate introducedOn,
+    Boolean suspended,
     @Version
     Integer version
 )

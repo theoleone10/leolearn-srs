@@ -97,6 +97,7 @@ export function ProgressPage() {
     )
     return hasRecentActivity ? Math.floor(Math.random() * 7) + 1 : 0
   }
+  
 
   const currentStreak = getCurrentStreak()
 

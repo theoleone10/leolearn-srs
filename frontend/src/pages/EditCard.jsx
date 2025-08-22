@@ -29,7 +29,6 @@ export function EditCardPage() {
         </Button>
       </div>
       
-
       <DeckForm />
       <CardList />
     </div>
