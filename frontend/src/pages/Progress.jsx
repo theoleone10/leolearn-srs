@@ -110,7 +110,7 @@ export function ProgressPage() {
       </div>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-6">
             <BarChart3 className="h-8 w-8 text-blue-500 mb-2" />

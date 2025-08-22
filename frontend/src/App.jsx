@@ -29,20 +29,31 @@ function AppContent() {
         <ToastContainer />
           {/* <Navbar/> */}
 
-          {location.pathname !== '/study/session' && location.pathname !== '/add-card' && location.pathname !== '/edit-deck' && 
+          {(location.pathname !== '/study/session' && location.pathname !== '/add-card' && location.pathname !== '/edit-deck') ?
+           ( <>
             <Navbar/>
-          
-          }
-          <div className="container mx-auto px-4 pt-25 pb-8">
-          <Routes>
+            <div className="container mx-auto px-4 pt-25 pb-8">
+              <Routes>
+                <Route path="/" element={<CardsPage />} />
+                <Route path="/study" element={<StudyPage />} />
+                <Route path="/progress" element={<ProgressPage />} />
+                <Route path="/edit-deck" element={<EditCardPage />} />
+                <Route path="/add-card" element={<AddCardPage />} />
+                <Route path="/study/session" element={<StudySessionPage />} />
+              </Routes>     
+            </div>
+           </>) :
+
+          (<Routes>
             <Route path="/" element={<CardsPage />} />
             <Route path="/study" element={<StudyPage />} />
             <Route path="/progress" element={<ProgressPage />} />
             <Route path="/edit-deck" element={<EditCardPage />} />
             <Route path="/add-card" element={<AddCardPage />} />
             <Route path="/study/session" element={<StudySessionPage />} />
-          </Routes>     
-          </div>  
+          </Routes>  )}
+
+          
       </div>
     </div>
   )

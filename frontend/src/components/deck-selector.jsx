@@ -203,7 +203,7 @@ export function DeckSelector() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-3 gap-x-1 sm:gap-x-8">
+                <div className="grid sm:grid-cols-3 grid-cols-2 gap-x-1 sm:gap-x-8">
                   <div className="flex items-center justify-start text-sm">
                     <span className="text-muted-foreground">Total Cards:</span>
                     <Badge variant="secondary">{cardCount}</Badge>
@@ -216,7 +216,7 @@ export function DeckSelector() {
                   )}
                   {isSelected && (
                     <div className="">
-                      <Badge variant="default" className="text-xs">
+                      <Badge variant="default" className="text-xs hidden sm:flex">
                         Currently Selected
                       </Badge>
                     </div>

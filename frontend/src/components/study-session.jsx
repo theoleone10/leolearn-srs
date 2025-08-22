@@ -280,7 +280,7 @@ const predictTime = (quality) => {
           ) : (
             <div className="space-y-4">
               <p className="text-center text-sm text-muted-foreground">How well did you know this answer?</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 <Button
                   variant="destructive"
                   onClick={() => handleAnswer(1)}

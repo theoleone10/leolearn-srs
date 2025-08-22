@@ -1,9 +1,7 @@
 services:
   postgres:
     image: 'postgres:latest'
-    environment:
-      - 'POSTGRES_DB=srs'
-      - 'POSTGRES_PASSWORD=password'
-      - 'POSTGRES_USER=theo'
+    env_file:
+      - .env
     ports:
       - '5434:5432'
