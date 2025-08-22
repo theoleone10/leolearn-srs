@@ -10,7 +10,7 @@ import { Trash2, Plus, BookOpen, Edit } from "lucide-react"
 import { useCards } from "../context/CardContext"
 
 export function DeckSelector() {
-  const { decks, currentDeck, addDeck, deleteDeck, setCurrentDeck, navigate } = useCards()
+  const { decks, currentDeck, addDeck, deleteDeck, setCurrentDeck, navigate, getCardsForReview } = useCards()
   const [newDeckName, setNewDeckName] = useState("")
   const [newDeckDescription, setNewDeckDescription] = useState("")
   const [newDeckCardsPerDay, setNewDeckCardsPerDay] = useState(20)
@@ -43,9 +43,38 @@ export function DeckSelector() {
   }
 
   const getDueCount = (deck) => {
-    if (!deck.cards) return 0
-    const now = new Date()
-    return deck.cards.filter((card) => new Date(card.nextReview) <= now).length
+    if (!deck) return 0
+
+    const now = new Date().toISOString()
+
+    const today = new Date().toISOString().split("T")[0]
+
+    const cards = deck.cards ?? []
+
+    
+
+    const due = cards.filter(
+      (card) => card.nextReview <= now && card.introducedOn && !card.suspended
+    )
+
+
+    
+
+    const introducedToday = cards.filter(
+      (card) => card.introducedOn === today
+    ).length
+
+    const newLeft = Math.max((deck.cardsPerDay || 0) - introducedToday, 0)
+    
+
+    const newCards = cards
+      .filter((card) => !card.introducedOn && !card.suspended)
+      .slice(0, newLeft)
+
+      
+    
+
+      return [...due, ...newCards].length
   }
 
   return (

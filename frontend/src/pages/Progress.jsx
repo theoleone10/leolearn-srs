@@ -84,22 +84,23 @@ export function ProgressPage() {
     return { totalReviews, efficiency }
   }
 
+
   const efficiencyStats = getEfficiencyStats()
 
-  // Calculate streak (simplified - days with any reviews)
-  const getCurrentStreak = () => {
-    // This is a simplified calculation
-    // In a real app, you'd track daily study sessions
-    const hasRecentActivity = decks.some((deck) =>
-      deck.cards.some(
-        (card) => card.lastReviewed && new Date(card.lastReviewed) > new Date(Date.now() - 24 * 60 * 60 * 1000),
-      ),
-    )
-    return hasRecentActivity ? Math.floor(Math.random() * 7) + 1 : 0
-  }
+  // // Calculate streak (simplified - days with any reviews)
+  // const getCurrentStreak = () => {
+  //   // This is a simplified calculation
+  //   // In a real app, you'd track daily study sessions
+  //   const hasRecentActivity = decks.some((deck) =>
+  //     deck.cards.some(
+  //       (card) => card.lastReviewed && new Date(card.lastReviewed) > new Date(Date.now() - 24 * 60 * 60 * 1000),
+  //     ),
+  //   )
+  //   return hasRecentActivity ? Math.floor(Math.random() * 7) + 1 : 0
+  // }
   
 
-  const currentStreak = getCurrentStreak()
+  // const currentStreak = getCurrentStreak()
 
   return (
     <div className="space-y-6">
@@ -109,7 +110,7 @@ export function ProgressPage() {
       </div>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-6">
             <BarChart3 className="h-8 w-8 text-blue-500 mb-2" />
@@ -134,13 +135,13 @@ export function ProgressPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardContent className="flex flex-col items-center justify-center p-6">
             <Flame className="h-8 w-8 text-orange-500 mb-2" />
             <div className="text-2xl font-bold">{currentStreak}</div>
             <div className="text-sm text-muted-foreground">Day Streak</div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* Mastery Progress */}
