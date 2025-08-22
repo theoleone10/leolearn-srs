@@ -13,27 +13,28 @@ import { Input } from "../components/ui/input"
 export function DeckForm({ editingCard, onCancel }) {
   const { getCurrentDeck, updateDeck } = useCards()
   const currentDeck = getCurrentDeck()
-  const navigate = useNavigate()
+  
 
   const [newDeckName, setNewDeckName] = useState(currentDeck?.name || "")
   const [newDeckDescription, setNewDeckDescription] = useState(currentDeck?.description || "")
   const [newDeckCardsPerDay, setNewDeckCardsPerDay] = useState(currentDeck?.cardsPerDay || 20)
 
-
+  useEffect(() => {
+    setNewDeckName(currentDeck?.name || "")
+    setNewDeckDescription(currentDeck?.description || "")
+    setNewDeckCardsPerDay(currentDeck?.cardsPerDay || 20)
+  }, [currentDeck])
+  
   const handleCreateDeck = (e) => {
     e.preventDefault()
     if (!newDeckName.trim()) return
-
-    console.log(newDeckName.trim(), newDeckDescription.trim(), newDeckCardsPerDay);
-    console.log(currentDeck.id, currentDeck.dateCreated);
     
     
 
     updateDeck(currentDeck.id,  { name:newDeckName.trim(), description: newDeckDescription.trim(), cardsPerDay: newDeckCardsPerDay, dateCreated: currentDeck.dateCreated })
-    // setNewDeckName(""),
-    // setNewDeckDescription("")
-    // setNewDeckCardsPerDay(20)
   }
+
+
 
   return (
     <form onSubmit={handleCreateDeck} className="space-y-4">
