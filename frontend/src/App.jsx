@@ -12,20 +12,28 @@ import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import { AddCardPage } from "./pages/AddCard.jsx"
 import { ToastContainer, toast } from 'react-toastify';
+import { assets } from "./assets/assets.js"
 
 function AppContent() {
   const location = useLocation();
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">LeoLearn</h1>
+        {/* <div className="text-center mb-8"> */}
+          {/* <h1 className="text-4xl font-bold text-gray-900 mb-2">LeoLearn</h1> */}
+          {/* <div className="flex justify-start mb-3">
+  <img src={assets.logo} alt="LeoLearn Logo" className="w-40" />
+</div> */}
           {/* <p className="text-lg text-gray-600">Master anything with spaced repetition</p> */}
-        </div>
+        {/* </div> */}
         <ToastContainer />
           {/* <Navbar/> */}
 
-          {location.pathname !== '/study/session' && location.pathname !== '/add-card' && location.pathname !== '/edit-deck' && <Navbar/>}
+          {location.pathname !== '/study/session' && location.pathname !== '/add-card' && location.pathname !== '/edit-deck' && 
+            <Navbar/>
+          
+          }
+          <div className="container mx-auto px-4 pt-25 pb-8">
           <Routes>
             <Route path="/" element={<CardsPage />} />
             <Route path="/study" element={<StudyPage />} />
@@ -33,7 +41,8 @@ function AppContent() {
             <Route path="/edit-deck" element={<EditCardPage />} />
             <Route path="/add-card" element={<AddCardPage />} />
             <Route path="/study/session" element={<StudySessionPage />} />
-          </Routes>       
+          </Routes>     
+          </div>  
       </div>
     </div>
   )

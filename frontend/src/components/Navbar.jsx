@@ -1,50 +1,79 @@
 import React, {useContext, useState, useEffect} from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { BookOpen, Brain, BarChart3 } from "lucide-react"
+import { assets } from '../assets/assets'
 // import { cn } from "../../lib/utils"
 
 const Navbar = () => {
+    const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
  
 
   return (
-    <div className='w-full max-w-6xl mx-auto-20 lg:mx-auto'>
+    <div 
+    // className='w-full max-w-6xl mx-auto-20 lg:mx-auto'
+    className={`fixed top-0 left-0 w-full z-50 px-50 pt-5 transition-colors duration-300 ${
+        scrolled ? "bg-gray-100 shadow-md" : "bg-transparent"
+      }`}
+    >
         {/* <Link to='/'><img src={assets.logo} alt="" className='w-36' /></Link> */}
-        <ul className='grid w-full grid-cols-3 mb-8 text-center justify-items-center'>
+        
+        <ul className='grid w-full grid-cols-7 mb-4 items-center text-center justify-items-center'>
+        <div className="col-start-1 justify-self-start">
+            <img src={assets.logo} alt="LeoLearn Logo" className="w-35" />
+        </div>
+
+        <li className="col-start-4">
             <NavLink to='/' className={({ isActive }) =>
-                `flex items-center gap-2 px-5 py-3 rounded-lg font-semibold tracking-wide transition-all duration-300
+                `flex items-center gap-2 px-3 py-2 rounded-lg font-semibold tracking-wide transition-all duration-300
                 ${
                     isActive
                     ? 'bg-blue-500 text-white shadow-[0_0_10px_bg-blue-600]'
-                    : 'hover:bg-blue-500 hover:text-white hover:shadow-[0_0_10px_bg-blue-600]'
+                    : 'hover:bg-gray-100 shadow-[0_0_10px_bg-black]'
                 }
                 `
             }>
                 <BookOpen className="h-4 w-4" />
                 Decks
             </NavLink>
-            
+            </li>
+            <li className="col-start-5">
             <NavLink to='/study' className={({ isActive }) =>
-                `flex items-center gap-2 px-5 py-3 rounded-lg font-semibold tracking-wide transition-all duration-300
+                `flex items-center gap-2 px-3 py-2 rounded-lg font-semibold tracking-wide transition-all duration-300
                 ${
                     isActive
                     ? 'bg-blue-500 text-white shadow-[0_0_10px_bg-blue-600]'
-                    : 'hover:bg-blue-500 hover:text-white hover:shadow-[0_0_10px_bg-blue-600]'
+                    : 'hover:bg-gray-100 shadow-[0_0_10px_bg-black]'
                 }
                 `}>
                 <Brain className="h-4 w-4" />
                 Study
             </NavLink>
+            </li>
+            <li className="col-start-6">
             <NavLink to='/progress' className={({ isActive }) =>
-                `flex items-center gap-2 px-5 py-3 rounded-lg font-semibold tracking-wide transition-all duration-300
+                `flex items-center gap-2 px-3 py-2 rounded-lg font-semibold tracking-wide transition-all duration-300
                 ${
                     isActive
                     ? 'bg-blue-500 text-white shadow-[0_0_10px_bg-blue-600]'
-                    : 'hover:bg-blue-500 hover:text-white hover:shadow-[0_0_10px_bg-blue-600]'
+                    : 'hover:bg-gray-100 shadow-[0_0_10px_bg-black]'
                 }
                 `}>
                 <BarChart3 className="h-4 w-4" />
                 Progress
             </NavLink>
+            </li>
 
         </ul>
 
